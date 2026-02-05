@@ -1,0 +1,123 @@
+{
+  "app_name": "SSL Sertifika Yöneticisi",
+  "nav": {
+    "home": "Ana Sayfa",
+    "convert": "Dönüştür",
+    "analyze": "Analiz Et",
+    "generate": "Oluştur"
+  },
+  "home": {
+    "title": "SSL Sertifika Yönetim Aracı",
+    "subtitle": "Format dönüşümleri, sertifika analizi ve oluşturma işlemlerini tek bir arayüzden yapın",
+    "features": {
+      "convert": {
+        "title": "Format Dönüşümleri",
+        "desc": "PFX, PEM, DER, CER ve P7B formatları arasında dönüşüm yapın"
+      },
+      "analyze": {
+        "title": "Sertifika Analizi",
+        "desc": "Sertifika detaylarını, geçerlilik tarihlerini ve SAN bilgilerini görüntüleyin"
+      },
+      "generate": {
+        "title": "Sertifika Oluşturma",
+        "desc": "CSR, self-signed sertifika ve private key oluşturun"
+      }
+    }
+  },
+  "convert": {
+    "title": "Format Dönüşümleri",
+    "select_type": "Dönüşüm Türü Seçin",
+    "types": {
+      "pfx_to_pem": "PFX → PEM",
+      "pem_to_pfx": "PEM → PFX",
+      "pem_to_der": "PEM → DER",
+      "der_to_pem": "DER → PEM",
+      "pem_to_p7b": "PEM → P7B",
+      "p7b_to_pem": "P7B → PEM",
+      "extract_key": "Private Key Çıkar",
+      "extract_cert": "Sertifika Çıkar"
+    },
+    "file": "Dosya",
+    "certificate": "Sertifika",
+    "private_key": "Private Key",
+    "chain": "Sertifika Zinciri (opsiyonel)",
+    "password": "Şifre",
+    "new_password": "Yeni Şifre",
+    "friendly_name": "Sertifika Adı",
+    "convert_btn": "Dönüştür",
+    "download": "İndir",
+    "copy": "Kopyala"
+  },
+  "analyze": {
+    "title": "Sertifika Analizi",
+    "upload_file": "Dosya Yükle",
+    "paste_pem": "PEM Yapıştır",
+    "analyze_btn": "Analiz Et",
+    "password": "Şifre (PFX için)",
+    "result": {
+      "subject": "Konu",
+      "issuer": "Veren",
+      "validity": "Geçerlilik",
+      "not_before": "Başlangıç",
+      "not_after": "Bitiş",
+      "days_remaining": "Kalan Gün",
+      "serial": "Seri Numarası",
+      "fingerprints": "Parmak İzleri",
+      "public_key": "Public Key",
+      "algorithm": "Algoritma",
+      "key_size": "Key Boyutu",
+      "san": "Subject Alternative Names",
+      "key_usage": "Key Kullanımı",
+      "extended_key_usage": "Genişletilmiş Key Kullanımı",
+      "is_ca": "CA Sertifikası",
+      "self_signed": "Self-Signed",
+      "valid": "Geçerli",
+      "expired": "Süresi Dolmuş"
+    }
+  },
+  "generate": {
+    "title": "Sertifika ve Key Oluşturma",
+    "select_type": "İşlem Türü Seçin",
+    "types": {
+      "private_key": "Private Key Oluştur",
+      "csr": "CSR Oluştur",
+      "self_signed": "Self-Signed Sertifika",
+      "ca": "CA Sertifikası",
+      "key_and_cert": "Key + Sertifika"
+    },
+    "key_type": "Key Türü",
+    "validity_days": "Geçerlilik Süresi (gün)",
+    "subject": {
+      "title": "Konu Bilgileri",
+      "cn": "Common Name (CN)",
+      "o": "Organization (O)",
+      "ou": "Organizational Unit (OU)",
+      "c": "Country (C)",
+      "st": "State (ST)",
+      "l": "Locality (L)",
+      "email": "Email"
+    },
+    "san": {
+      "title": "Subject Alternative Names",
+      "dns": "DNS İsimleri (virgülle ayırın)",
+      "ip": "IP Adresleri (virgülle ayırın)"
+    },
+    "password": "Key Şifresi (opsiyonel)",
+    "generate_btn": "Oluştur",
+    "download_key": "Key İndir",
+    "download_cert": "Sertifika İndir",
+    "download_csr": "CSR İndir"
+  },
+  "common": {
+    "select_file": "Dosya Seçin veya Sürükleyin",
+    "drag_drop": "Dosyayı buraya sürükleyip bırakın",
+    "or": "veya",
+    "browse": "Dosya Seç",
+    "loading": "Yükleniyor...",
+    "success": "Başarılı",
+    "error": "Hata",
+    "copy_success": "Panoya kopyalandı",
+    "yes": "Evet",
+    "no": "Hayır"
+  }
+}

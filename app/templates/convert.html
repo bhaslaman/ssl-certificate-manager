@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="bi bi-arrow-left-right text-primary"></i>
+    {{ t.convert.title }}
+</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">{{ t.convert.select_type }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action conversion-type active" data-type="pfx_to_pem">
+                        <i class="bi bi-file-earmark-lock"></i> {{ t.convert.types.pfx_to_pem }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action conversion-type" data-type="pem_to_pfx">
+                        <i class="bi bi-file-earmark-text"></i> {{ t.convert.types.pem_to_pfx }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action conversion-type" data-type="pem_to_der">
+                        <i class="bi bi-file-earmark-binary"></i> {{ t.convert.types.pem_to_der }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action conversion-type" data-type="der_to_pem">
+                        <i class="bi bi-file-earmark-text"></i> {{ t.convert.types.der_to_pem }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action conversion-type" data-type="pem_to_p7b">
+                        <i class="bi bi-file-earmark-zip"></i> {{ t.convert.types.pem_to_p7b }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action conversion-type" data-type="p7b_to_pem">
+                        <i class="bi bi-file-earmark-text"></i> {{ t.convert.types.p7b_to_pem }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action conversion-type" data-type="extract_key">
+                        <i class="bi bi-key"></i> {{ t.convert.types.extract_key }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action conversion-type" data-type="extract_cert">
+                        <i class="bi bi-file-earmark-medical"></i> {{ t.convert.types.extract_cert }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" id="form-title">{{ t.convert.types.pfx_to_pem }}</h5>
+            </div>
+            <div class="card-body">
+                <form id="convert-form">
+                    <!-- PFX to PEM -->
+                    <div id="form-pfx_to_pem" class="convert-form-section">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.file }} (PFX/P12)</label>
+                            <div class="drop-zone" data-input="pfx-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="pfx-file" accept=".pfx,.p12" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.password }}</label>
+                            <input type="password" class="form-control" id="pfx-password" placeholder="{{ t.convert.password }}">
+                        </div>
+                    </div>
+
+                    <!-- PEM to PFX -->
+                    <div id="form-pem_to_pfx" class="convert-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.certificate }} (PEM)</label>
+                            <div class="drop-zone" data-input="pem-cert-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="pem-cert-file" accept=".pem,.crt,.cer" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.private_key }} (PEM)</label>
+                            <div class="drop-zone" data-input="pem-key-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="pem-key-file" accept=".pem,.key" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.chain }}</label>
+                            <div class="drop-zone" data-input="pem-chain-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="pem-chain-file" accept=".pem,.crt,.cer" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.password }}</label>
+                            <input type="password" class="form-control" id="pfx-out-password" placeholder="{{ t.convert.password }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.friendly_name }}</label>
+                            <input type="text" class="form-control" id="friendly-name" value="certificate">
+                        </div>
+                    </div>
+
+                    <!-- PEM to DER -->
+                    <div id="form-pem_to_der" class="convert-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.certificate }} (PEM)</label>
+                            <div class="drop-zone" data-input="pem-to-der-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="pem-to-der-file" accept=".pem,.crt,.cer" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                    </div>
+
+                    <!-- DER to PEM -->
+                    <div id="form-der_to_pem" class="convert-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.certificate }} (DER)</label>
+                            <div class="drop-zone" data-input="der-to-pem-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="der-to-pem-file" accept=".der,.cer,.crt" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                    </div>
+
+                    <!-- PEM to P7B -->
+                    <div id="form-pem_to_p7b" class="convert-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.certificate }} (PEM)</label>
+                            <div class="drop-zone" data-input="pem-to-p7b-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="pem-to-p7b-file" accept=".pem,.crt,.cer" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.chain }}</label>
+                            <div class="drop-zone" data-input="pem-to-p7b-chain-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="pem-to-p7b-chain-file" accept=".pem,.crt,.cer" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                    </div>
+
+                    <!-- P7B to PEM -->
+                    <div id="form-p7b_to_pem" class="convert-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.file }} (P7B)</label>
+                            <div class="drop-zone" data-input="p7b-to-pem-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="p7b-to-pem-file" accept=".p7b,.p7c" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                    </div>
+
+                    <!-- Extract Key -->
+                    <div id="form-extract_key" class="convert-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.file }} (PFX/P12)</label>
+                            <div class="drop-zone" data-input="extract-key-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="extract-key-file" accept=".pfx,.p12" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.password }}</label>
+                            <input type="password" class="form-control" id="extract-key-password">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.new_password }}</label>
+                            <input type="password" class="form-control" id="extract-key-new-password">
+                        </div>
+                    </div>
+
+                    <!-- Extract Cert -->
+                    <div id="form-extract_cert" class="convert-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.file }} (PFX/P12)</label>
+                            <div class="drop-zone" data-input="extract-cert-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="extract-cert-file" accept=".pfx,.p12" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.password }}</label>
+                            <input type="password" class="form-control" id="extract-cert-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-arrow-repeat"></i> {{ t.convert.convert_btn }}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="convert-result" class="card mt-4 d-none">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-check-circle text-success"></i> {{ t.common.success }}</h5>
+            </div>
+            <div class="card-body">
+                <div id="result-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    initConvertPage();
+</script>
+{% endblock %}

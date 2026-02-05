@@ -1,0 +1,123 @@
+{
+  "app_name": "SSL Certificate Manager",
+  "nav": {
+    "home": "Home",
+    "convert": "Convert",
+    "analyze": "Analyze",
+    "generate": "Generate"
+  },
+  "home": {
+    "title": "SSL Certificate Management Tool",
+    "subtitle": "Perform format conversions, certificate analysis and generation from a single interface",
+    "features": {
+      "convert": {
+        "title": "Format Conversions",
+        "desc": "Convert between PFX, PEM, DER, CER and P7B formats"
+      },
+      "analyze": {
+        "title": "Certificate Analysis",
+        "desc": "View certificate details, validity dates and SAN information"
+      },
+      "generate": {
+        "title": "Certificate Generation",
+        "desc": "Create CSR, self-signed certificates and private keys"
+      }
+    }
+  },
+  "convert": {
+    "title": "Format Conversions",
+    "select_type": "Select Conversion Type",
+    "types": {
+      "pfx_to_pem": "PFX → PEM",
+      "pem_to_pfx": "PEM → PFX",
+      "pem_to_der": "PEM → DER",
+      "der_to_pem": "DER → PEM",
+      "pem_to_p7b": "PEM → P7B",
+      "p7b_to_pem": "P7B → PEM",
+      "extract_key": "Extract Private Key",
+      "extract_cert": "Extract Certificate"
+    },
+    "file": "File",
+    "certificate": "Certificate",
+    "private_key": "Private Key",
+    "chain": "Certificate Chain (optional)",
+    "password": "Password",
+    "new_password": "New Password",
+    "friendly_name": "Friendly Name",
+    "convert_btn": "Convert",
+    "download": "Download",
+    "copy": "Copy"
+  },
+  "analyze": {
+    "title": "Certificate Analysis",
+    "upload_file": "Upload File",
+    "paste_pem": "Paste PEM",
+    "analyze_btn": "Analyze",
+    "password": "Password (for PFX)",
+    "result": {
+      "subject": "Subject",
+      "issuer": "Issuer",
+      "validity": "Validity",
+      "not_before": "Not Before",
+      "not_after": "Not After",
+      "days_remaining": "Days Remaining",
+      "serial": "Serial Number",
+      "fingerprints": "Fingerprints",
+      "public_key": "Public Key",
+      "algorithm": "Algorithm",
+      "key_size": "Key Size",
+      "san": "Subject Alternative Names",
+      "key_usage": "Key Usage",
+      "extended_key_usage": "Extended Key Usage",
+      "is_ca": "CA Certificate",
+      "self_signed": "Self-Signed",
+      "valid": "Valid",
+      "expired": "Expired"
+    }
+  },
+  "generate": {
+    "title": "Certificate and Key Generation",
+    "select_type": "Select Operation Type",
+    "types": {
+      "private_key": "Generate Private Key",
+      "csr": "Generate CSR",
+      "self_signed": "Self-Signed Certificate",
+      "ca": "CA Certificate",
+      "key_and_cert": "Key + Certificate"
+    },
+    "key_type": "Key Type",
+    "validity_days": "Validity Period (days)",
+    "subject": {
+      "title": "Subject Information",
+      "cn": "Common Name (CN)",
+      "o": "Organization (O)",
+      "ou": "Organizational Unit (OU)",
+      "c": "Country (C)",
+      "st": "State (ST)",
+      "l": "Locality (L)",
+      "email": "Email"
+    },
+    "san": {
+      "title": "Subject Alternative Names",
+      "dns": "DNS Names (comma separated)",
+      "ip": "IP Addresses (comma separated)"
+    },
+    "password": "Key Password (optional)",
+    "generate_btn": "Generate",
+    "download_key": "Download Key",
+    "download_cert": "Download Certificate",
+    "download_csr": "Download CSR"
+  },
+  "common": {
+    "select_file": "Select or Drag File",
+    "drag_drop": "Drag and drop file here",
+    "or": "or",
+    "browse": "Browse",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "copy_success": "Copied to clipboard",
+    "yes": "Yes",
+    "no": "No"
+  }
+}

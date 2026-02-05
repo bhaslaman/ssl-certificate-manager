@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="bi bi-plus-circle text-primary"></i>
+    {{ t.generate.title }}
+</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">{{ t.generate.select_type }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action generate-type active" data-type="private_key">
+                        <i class="bi bi-key"></i> {{ t.generate.types.private_key }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action generate-type" data-type="key_and_cert">
+                        <i class="bi bi-file-earmark-plus"></i> {{ t.generate.types.key_and_cert }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action generate-type" data-type="csr">
+                        <i class="bi bi-file-earmark-text"></i> {{ t.generate.types.csr }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action generate-type" data-type="self_signed">
+                        <i class="bi bi-shield-check"></i> {{ t.generate.types.self_signed }}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action generate-type" data-type="ca">
+                        <i class="bi bi-building"></i> {{ t.generate.types.ca }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" id="form-title">{{ t.generate.types.private_key }}</h5>
+            </div>
+            <div class="card-body">
+                <form id="generate-form">
+                    <!-- Private Key Only -->
+                    <div id="form-private_key" class="generate-form-section">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.key_type }}</label>
+                            <select class="form-select" id="key-type">
+                                <option value="RSA-2048">RSA 2048-bit</option>
+                                <option value="RSA-4096">RSA 4096-bit</option>
+                                <option value="ECDSA-P256">ECDSA P-256</option>
+                                <option value="ECDSA-P384">ECDSA P-384</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.password }}</label>
+                            <input type="password" class="form-control" id="key-password">
+                        </div>
+                    </div>
+
+                    <!-- Key and Certificate -->
+                    <div id="form-key_and_cert" class="generate-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.key_type }}</label>
+                            <select class="form-select" id="kc-key-type">
+                                <option value="RSA-2048">RSA 2048-bit</option>
+                                <option value="RSA-4096">RSA 4096-bit</option>
+                                <option value="ECDSA-P256">ECDSA P-256</option>
+                                <option value="ECDSA-P384">ECDSA P-384</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.validity_days }}</label>
+                            <input type="number" class="form-control" id="kc-validity" value="365" min="1" max="3650">
+                        </div>
+                        <hr>
+                        <h6>{{ t.generate.subject.title }}</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.cn }} *</label>
+                                <input type="text" class="form-control" id="kc-cn" required placeholder="example.com">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.o }}</label>
+                                <input type="text" class="form-control" id="kc-o" placeholder="My Company">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.ou }}</label>
+                                <input type="text" class="form-control" id="kc-ou" placeholder="IT Department">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.c }}</label>
+                                <input type="text" class="form-control" id="kc-c" placeholder="TR" maxlength="2">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.st }}</label>
+                                <input type="text" class="form-control" id="kc-st" placeholder="Istanbul">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.l }}</label>
+                                <input type="text" class="form-control" id="kc-l" placeholder="Kadikoy">
+                            </div>
+                        </div>
+                        <hr>
+                        <h6>{{ t.generate.san.title }}</h6>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.san.dns }}</label>
+                            <input type="text" class="form-control" id="kc-san-dns" placeholder="example.com, www.example.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.san.ip }}</label>
+                            <input type="text" class="form-control" id="kc-san-ip" placeholder="192.168.1.1, 10.0.0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.password }}</label>
+                            <input type="password" class="form-control" id="kc-password">
+                        </div>
+                    </div>
+
+                    <!-- CSR -->
+                    <div id="form-csr" class="generate-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.private_key }} *</label>
+                            <div class="drop-zone" data-input="csr-key-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="csr-key-file" accept=".pem,.key" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.password }}</label>
+                            <input type="password" class="form-control" id="csr-key-password">
+                        </div>
+                        <hr>
+                        <h6>{{ t.generate.subject.title }}</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.cn }} *</label>
+                                <input type="text" class="form-control" id="csr-cn" required placeholder="example.com">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.o }}</label>
+                                <input type="text" class="form-control" id="csr-o">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.ou }}</label>
+                                <input type="text" class="form-control" id="csr-ou">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.c }}</label>
+                                <input type="text" class="form-control" id="csr-c" maxlength="2">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.st }}</label>
+                                <input type="text" class="form-control" id="csr-st">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.l }}</label>
+                                <input type="text" class="form-control" id="csr-l">
+                            </div>
+                        </div>
+                        <hr>
+                        <h6>{{ t.generate.san.title }}</h6>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.san.dns }}</label>
+                            <input type="text" class="form-control" id="csr-san-dns">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.san.ip }}</label>
+                            <input type="text" class="form-control" id="csr-san-ip">
+                        </div>
+                    </div>
+
+                    <!-- Self-Signed -->
+                    <div id="form-self_signed" class="generate-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.private_key }} *</label>
+                            <div class="drop-zone" data-input="ss-key-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="ss-key-file" accept=".pem,.key" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.password }}</label>
+                            <input type="password" class="form-control" id="ss-key-password">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.validity_days }}</label>
+                            <input type="number" class="form-control" id="ss-validity" value="365" min="1" max="3650">
+                        </div>
+                        <hr>
+                        <h6>{{ t.generate.subject.title }}</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.cn }} *</label>
+                                <input type="text" class="form-control" id="ss-cn" required placeholder="example.com">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.o }}</label>
+                                <input type="text" class="form-control" id="ss-o">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.ou }}</label>
+                                <input type="text" class="form-control" id="ss-ou">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.c }}</label>
+                                <input type="text" class="form-control" id="ss-c" maxlength="2">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.st }}</label>
+                                <input type="text" class="form-control" id="ss-st">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.l }}</label>
+                                <input type="text" class="form-control" id="ss-l">
+                            </div>
+                        </div>
+                        <hr>
+                        <h6>{{ t.generate.san.title }}</h6>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.san.dns }}</label>
+                            <input type="text" class="form-control" id="ss-san-dns">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.san.ip }}</label>
+                            <input type="text" class="form-control" id="ss-san-ip">
+                        </div>
+                    </div>
+
+                    <!-- CA Certificate -->
+                    <div id="form-ca" class="generate-form-section d-none">
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.convert.private_key }} *</label>
+                            <div class="drop-zone" data-input="ca-key-file">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p>{{ t.common.drag_drop }}</p>
+                                <input type="file" id="ca-key-file" accept=".pem,.key" class="d-none">
+                                <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                            </div>
+                            <small class="text-muted file-name"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.password }}</label>
+                            <input type="password" class="form-control" id="ca-key-password">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ t.generate.validity_days }}</label>
+                            <input type="number" class="form-control" id="ca-validity" value="3650" min="1" max="7300">
+                        </div>
+                        <hr>
+                        <h6>{{ t.generate.subject.title }}</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.cn }} *</label>
+                                <input type="text" class="form-control" id="ca-cn" required placeholder="My Root CA">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.o }}</label>
+                                <input type="text" class="form-control" id="ca-o">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.ou }}</label>
+                                <input type="text" class="form-control" id="ca-ou">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.c }}</label>
+                                <input type="text" class="form-control" id="ca-c" maxlength="2">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.st }}</label>
+                                <input type="text" class="form-control" id="ca-st">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ t.generate.subject.l }}</label>
+                                <input type="text" class="form-control" id="ca-l">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-plus-circle"></i> {{ t.generate.generate_btn }}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="generate-result" class="card mt-4 d-none">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-check-circle text-success"></i> {{ t.common.success }}</h5>
+            </div>
+            <div class="card-body">
+                <div id="result-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    initGeneratePage();
+</script>
+{% endblock %}

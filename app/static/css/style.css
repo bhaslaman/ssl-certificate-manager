@@ -1,0 +1,322 @@
+/* SSL Certificate Manager - Custom Styles */
+
+:root {
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Feature Cards */
+.feature-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+}
+
+/* Drop Zone */
+.drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+    background: #fafafa;
+}
+
+.drop-zone:hover,
+.drop-zone.dragover {
+    border-color: var(--primary-color);
+    background: #f0f7ff;
+}
+
+.drop-zone i {
+    font-size: 2rem;
+    color: #999;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.drop-zone.dragover i {
+    color: var(--primary-color);
+}
+
+.drop-zone p {
+    margin: 0;
+    color: #666;
+}
+
+.drop-zone.has-file {
+    border-color: var(--success-color);
+    background: #f0fff4;
+}
+
+.drop-zone.has-file i {
+    color: var(--success-color);
+}
+
+/* File name display */
+.file-name {
+    display: block;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* List group items */
+.list-group-item.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Result display */
+.result-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.result-value {
+    font-family: 'Courier New', monospace;
+    background: #f8f9fa;
+    padding: 5px 10px;
+    border-radius: 4px;
+    word-break: break-all;
+}
+
+/* PEM output */
+.pem-output {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* Certificate info display */
+.cert-info-section {
+    margin-bottom: 20px;
+}
+
+.cert-info-section h6 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.cert-info-table {
+    width: 100%;
+}
+
+.cert-info-table td {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.cert-info-table td:first-child {
+    font-weight: 600;
+    width: 40%;
+    color: #555;
+}
+
+.cert-info-table td:last-child {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    word-break: break-all;
+}
+
+/* Status badges */
+.badge-valid {
+    background-color: var(--success-color);
+}
+
+.badge-expired {
+    background-color: var(--danger-color);
+}
+
+.badge-warning {
+    background-color: var(--warning-color);
+    color: #000;
+}
+
+/* SAN list */
+.san-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.san-list li {
+    padding: 5px 10px;
+    background: #f8f9fa;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.san-list li .badge {
+    margin-right: 10px;
+}
+
+/* Action buttons */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.action-buttons .btn {
+    flex: 1;
+}
+
+/* Toast styling */
+.toast {
+    min-width: 300px;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .drop-zone {
+        padding: 20px;
+    }
+
+    .feature-icon {
+        font-size: 2rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+
+/* Chain display */
+.chain-cert {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #fff;
+}
+
+.chain-cert.chain-root {
+    border-color: var(--success-color);
+    border-width: 2px;
+}
+
+.chain-cert.chain-intermediate {
+    border-color: var(--warning-color);
+}
+
+.chain-cert.chain-end-entity {
+    border-color: var(--primary-color);
+}
+
+.chain-cert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.chain-cert-header h6 {
+    margin: 0;
+}
+
+/* Fingerprint display */
+.fingerprint {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    word-break: break-all;
+    background: #f8f9fa;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+/* Key usage badges */
+.key-usage-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.key-usage-badges .badge {
+    font-weight: normal;
+}
+
+/* Card header tabs */
+.card-header-tabs {
+    margin-bottom: -1px;
+}
+
+.card-header-tabs .nav-link {
+    border: none;
+    color: #666;
+}
+
+.card-header-tabs .nav-link.active {
+    background: #fff;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* Form sections */
+.convert-form-section,
+.generate-form-section {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

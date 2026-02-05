@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4">
+        <i class="bi bi-shield-lock text-primary"></i>
+        {{ t.home.title }}
+    </h1>
+    <p class="lead text-muted">{{ t.home.subtitle }}</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card h-100 feature-card">
+            <div class="card-body text-center">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-arrow-left-right"></i>
+                </div>
+                <h5 class="card-title">{{ t.home.features.convert.title }}</h5>
+                <p class="card-text text-muted">{{ t.home.features.convert.desc }}</p>
+                <a href="/convert?lang={{ lang }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i> {{ t.nav.convert }}
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 feature-card">
+            <div class="card-body text-center">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-search"></i>
+                </div>
+                <h5 class="card-title">{{ t.home.features.analyze.title }}</h5>
+                <p class="card-text text-muted">{{ t.home.features.analyze.desc }}</p>
+                <a href="/analyze?lang={{ lang }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i> {{ t.nav.analyze }}
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 feature-card">
+            <div class="card-body text-center">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-plus-circle"></i>
+                </div>
+                <h5 class="card-title">{{ t.home.features.generate.title }}</h5>
+                <p class="card-text text-muted">{{ t.home.features.generate.desc }}</p>
+                <a href="/generate?lang={{ lang }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i> {{ t.nav.generate }}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> {{ lang == 'tr' and 'Desteklenen Formatlar' or 'Supported Formats' }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>{{ lang == 'tr' and 'Sertifika Formatları' or 'Certificate Formats' }}</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> <strong>PFX/P12</strong> - PKCS#12 ({{ lang == 'tr' and 'sertifika + key paketi' or 'certificate + key bundle' }})</li>
+                            <li><i class="bi bi-check-circle text-success"></i> <strong>PEM</strong> - Base64 encoded ({{ lang == 'tr' and 'en yaygın format' or 'most common format' }})</li>
+                            <li><i class="bi bi-check-circle text-success"></i> <strong>DER</strong> - Binary encoded</li>
+                            <li><i class="bi bi-check-circle text-success"></i> <strong>CER/CRT</strong> - {{ lang == 'tr' and 'Sertifika dosyası' or 'Certificate file' }}</li>
+                            <li><i class="bi bi-check-circle text-success"></i> <strong>P7B</strong> - PKCS#7 ({{ lang == 'tr' and 'sertifika zinciri' or 'certificate chain' }})</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>{{ lang == 'tr' and 'Key Türleri' or 'Key Types' }}</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-key text-primary"></i> <strong>RSA 2048-bit</strong> - {{ lang == 'tr' and 'Standart güvenlik' or 'Standard security' }}</li>
+                            <li><i class="bi bi-key text-primary"></i> <strong>RSA 4096-bit</strong> - {{ lang == 'tr' and 'Yüksek güvenlik' or 'High security' }}</li>
+                            <li><i class="bi bi-key text-primary"></i> <strong>ECDSA P-256</strong> - {{ lang == 'tr' and 'Elliptic Curve' or 'Elliptic Curve' }}</li>
+                            <li><i class="bi bi-key text-primary"></i> <strong>ECDSA P-384</strong> - {{ lang == 'tr' and 'Elliptic Curve (güçlü)' or 'Elliptic Curve (stronger)' }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

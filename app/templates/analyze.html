@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="bi bi-search text-primary"></i>
+    {{ t.analyze.title }}
+</h2>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="upload-tab" data-bs-toggle="tab" href="#upload-panel" role="tab">
+                            <i class="bi bi-cloud-upload"></i> {{ t.analyze.upload_file }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="paste-tab" data-bs-toggle="tab" href="#paste-panel" role="tab">
+                            <i class="bi bi-clipboard"></i> {{ t.analyze.paste_pem }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="upload-panel" role="tabpanel">
+                        <form id="analyze-file-form">
+                            <div class="mb-3">
+                                <div class="drop-zone" data-input="analyze-file">
+                                    <i class="bi bi-cloud-upload"></i>
+                                    <p>{{ t.common.drag_drop }}</p>
+                                    <p class="text-muted small">PEM, DER, PFX, P12, CRT, CER</p>
+                                    <input type="file" id="analyze-file" accept=".pem,.der,.pfx,.p12,.crt,.cer,.csr" class="d-none">
+                                    <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                                </div>
+                                <small class="text-muted file-name"></small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ t.analyze.password }}</label>
+                                <input type="password" class="form-control" id="analyze-password" placeholder="{{ t.analyze.password }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search"></i> {{ t.analyze.analyze_btn }}
+                            </button>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="paste-panel" role="tabpanel">
+                        <form id="analyze-text-form">
+                            <div class="mb-3">
+                                <label class="form-label">PEM {{ t.convert.certificate }} / CSR</label>
+                                <textarea class="form-control font-monospace" id="pem-text" rows="12" placeholder="-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search"></i> {{ t.analyze.analyze_btn }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div id="analyze-result" class="card d-none">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> {{ t.analyze.result.subject }}</h5>
+            </div>
+            <div class="card-body">
+                <div id="result-content"></div>
+            </div>
+        </div>
+
+        <div id="analyze-placeholder" class="card">
+            <div class="card-body text-center text-muted py-5">
+                <i class="bi bi-file-earmark-medical display-1"></i>
+                <p class="mt-3">{{ lang == 'tr' and 'Analiz etmek icin bir sertifika yukleyin veya yapistirin' or 'Upload or paste a certificate to analyze' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    initAnalyzePage();
+</script>
+{% endblock %}
