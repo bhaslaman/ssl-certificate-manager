@@ -7,16 +7,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import json
 import os
+import httpx
 
-from .routers import convert, analyze, generate
+from .routers import convert, analyze, generate, check
 
 # Get the app directory
 APP_DIR = Path(__file__).parent
 
+CURRENT_VERSION = "2.0.0"
+GITHUB_REPO = "bhaslaman/ssl-certificate-manager"
+
 app = FastAPI(
     title="SSL Certificate Manager",
     description="Web-based SSL certificate management tool",
-    version="1.0.0"
+    version=CURRENT_VERSION
 )
 
 # CORS middleware
@@ -52,6 +56,7 @@ def get_translation(lang: str = "tr") -> dict:
 app.include_router(convert.router)
 app.include_router(analyze.router)
 app.include_router(generate.router)
+app.include_router(check.router)
 
 
 @app.get("/")
@@ -112,7 +117,102 @@ async def get_translations(lang: str):
     return get_translation(lang)
 
 
+@app.get("/check")
+async def check_page(request: Request, lang: str = "tr"):
+    """Render the SSL check page."""
+    return templates.TemplateResponse(
+        "check.html",
+        {
+            "request": request,
+            "t": get_translation(lang),
+            "lang": lang
+        }
+    )
+
+
+@app.get("/lifecycle")
+async def lifecycle_page(request: Request, lang: str = "tr"):
+    """Render the SSL lifecycle page."""
+    return templates.TemplateResponse(
+        "lifecycle.html",
+        {
+            "request": request,
+            "t": get_translation(lang),
+            "lang": lang
+        }
+    )
+
+
+@app.get("/docs-page")
+async def docs_page(request: Request, lang: str = "tr"):
+    """Render the documentation page."""
+    return templates.TemplateResponse(
+        "docs.html",
+        {
+            "request": request,
+            "t": get_translation(lang),
+            "lang": lang
+        }
+    )
+
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy", "version": "1.0.0"}
+    return {"status": "healthy", "version": CURRENT_VERSION}
+
+
+@app.get("/api/system/update-check")
+async def check_update():
+    """
+    Check for available updates from GitHub releases.
+
+    Returns current version, latest version, and update availability.
+    """
+    result = {
+        "current_version": CURRENT_VERSION,
+        "latest_version": None,
+        "update_available": False,
+        "release_url": None,
+        "error": None
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest",
+                headers={"Accept": "application/vnd.github.v3+json"}
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                latest_version = data.get("tag_name", "").lstrip("v")
+                result["latest_version"] = latest_version
+                result["release_url"] = data.get("html_url")
+
+                # Compare versions
+                if latest_version and latest_version != CURRENT_VERSION:
+                    # Simple version comparison (semver)
+                    try:
+                        current_parts = [int(x) for x in CURRENT_VERSION.split(".")]
+                        latest_parts = [int(x) for x in latest_version.split(".")]
+                        result["update_available"] = latest_parts > current_parts
+                    except ValueError:
+                        result["update_available"] = latest_version != CURRENT_VERSION
+            elif response.status_code == 404:
+                result["error"] = "Repository not found or no releases"
+            else:
+                result["error"] = f"GitHub API returned status {response.status_code}"
+
+    except httpx.TimeoutException:
+        result["error"] = "Request timed out"
+    except Exception as e:
+        result["error"] = str(e)
+
+    return result
+
+
+@app.get("/api/system/version")
+async def get_version():
+    """Get current application version."""
+    return {"version": CURRENT_VERSION}

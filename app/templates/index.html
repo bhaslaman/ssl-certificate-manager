@@ -1,59 +1,101 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="text-center mb-5">
-    <h1 class="display-4">
-        <i class="bi bi-shield-lock text-primary"></i>
-        {{ t.home.title }}
-    </h1>
-    <p class="lead text-muted">{{ t.home.subtitle }}</p>
-</div>
+<!-- Hero Section with Hub -->
+<div class="hub-container">
+    <div class="hub-center">
+        <div class="hub-icon">
+            <i class="bi bi-shield-lock-fill"></i>
+        </div>
+        <h1 class="hub-title">{{ t.app_name }}</h1>
+        <p class="hub-subtitle">{{ t.home.subtitle }}</p>
+    </div>
 
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="card h-100 feature-card">
-            <div class="card-body text-center">
-                <div class="feature-icon mb-3">
-                    <i class="bi bi-arrow-left-right"></i>
-                </div>
-                <h5 class="card-title">{{ t.home.features.convert.title }}</h5>
-                <p class="card-text text-muted">{{ t.home.features.convert.desc }}</p>
-                <a href="/convert?lang={{ lang }}" class="btn btn-primary">
-                    <i class="bi bi-arrow-right"></i> {{ t.nav.convert }}
-                </a>
+    <!-- Hub Nodes -->
+    <div class="hub-nodes">
+        <a href="/generate?lang={{ lang }}" class="hub-node hub-node-top" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ t.home.features.generate.desc }}">
+            <div class="hub-node-icon">
+                <i class="bi bi-plus-circle-fill"></i>
             </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 feature-card">
-            <div class="card-body text-center">
-                <div class="feature-icon mb-3">
-                    <i class="bi bi-search"></i>
-                </div>
-                <h5 class="card-title">{{ t.home.features.analyze.title }}</h5>
-                <p class="card-text text-muted">{{ t.home.features.analyze.desc }}</p>
-                <a href="/analyze?lang={{ lang }}" class="btn btn-primary">
-                    <i class="bi bi-arrow-right"></i> {{ t.nav.analyze }}
-                </a>
+            <span class="hub-node-label">{{ t.nav.generate }}</span>
+            <div class="hub-node-connector hub-connector-top"></div>
+        </a>
+
+        <a href="/convert?lang={{ lang }}" class="hub-node hub-node-right" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ t.home.features.convert.desc }}">
+            <div class="hub-node-icon">
+                <i class="bi bi-arrow-left-right"></i>
             </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 feature-card">
-            <div class="card-body text-center">
-                <div class="feature-icon mb-3">
-                    <i class="bi bi-plus-circle"></i>
-                </div>
-                <h5 class="card-title">{{ t.home.features.generate.title }}</h5>
-                <p class="card-text text-muted">{{ t.home.features.generate.desc }}</p>
-                <a href="/generate?lang={{ lang }}" class="btn btn-primary">
-                    <i class="bi bi-arrow-right"></i> {{ t.nav.generate }}
-                </a>
+            <span class="hub-node-label">{{ t.nav.convert }}</span>
+            <div class="hub-node-connector hub-connector-right"></div>
+        </a>
+
+        <a href="/analyze?lang={{ lang }}" class="hub-node hub-node-bottom" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ t.home.features.analyze.desc }}">
+            <div class="hub-node-icon">
+                <i class="bi bi-search"></i>
             </div>
-        </div>
+            <span class="hub-node-label">{{ t.nav.analyze }}</span>
+            <div class="hub-node-connector hub-connector-bottom"></div>
+        </a>
+
+        <a href="/check?lang={{ lang }}" class="hub-node hub-node-left" data-bs-toggle="tooltip" data-bs-placement="left" title="{{ t.home.features.check.desc }}">
+            <div class="hub-node-icon">
+                <i class="bi bi-globe-americas"></i>
+            </div>
+            <span class="hub-node-label">{{ t.nav.check }}</span>
+            <div class="hub-node-connector hub-connector-left"></div>
+        </a>
     </div>
 </div>
 
+<!-- Lifecycle Flow -->
+<div class="lifecycle-section mt-5">
+    <h4 class="text-center mb-4">
+        <i class="bi bi-diagram-3 text-primary"></i>
+        {{ t.lifecycle.title }}
+    </h4>
+    <div class="lifecycle-flow-horizontal">
+        <a href="/generate?lang={{ lang }}" class="lifecycle-step-h">
+            <div class="lifecycle-icon-h">
+                <i class="bi bi-key-fill"></i>
+            </div>
+            <span>{{ t.lifecycle.steps.key.title }}</span>
+        </a>
+        <div class="lifecycle-arrow-h"><i class="bi bi-chevron-right"></i></div>
+
+        <a href="/generate?lang={{ lang }}" class="lifecycle-step-h">
+            <div class="lifecycle-icon-h">
+                <i class="bi bi-file-earmark-text-fill"></i>
+            </div>
+            <span>CSR</span>
+        </a>
+        <div class="lifecycle-arrow-h"><i class="bi bi-chevron-right"></i></div>
+
+        <div class="lifecycle-step-h lifecycle-external-h">
+            <div class="lifecycle-icon-h">
+                <i class="bi bi-building-fill"></i>
+            </div>
+            <span>{{ t.lifecycle.steps.ca.title }}</span>
+        </div>
+        <div class="lifecycle-arrow-h"><i class="bi bi-chevron-right"></i></div>
+
+        <a href="/analyze?lang={{ lang }}" class="lifecycle-step-h">
+            <div class="lifecycle-icon-h">
+                <i class="bi bi-file-earmark-lock-fill"></i>
+            </div>
+            <span>{{ t.lifecycle.steps.cert.title }}</span>
+        </a>
+        <div class="lifecycle-arrow-h"><i class="bi bi-chevron-right"></i></div>
+
+        <a href="/convert?lang={{ lang }}" class="lifecycle-step-h">
+            <div class="lifecycle-icon-h">
+                <i class="bi bi-box-arrow-right"></i>
+            </div>
+            <span>{{ t.lifecycle.steps.export.title }}</span>
+        </a>
+    </div>
+</div>
+
+<!-- Supported Formats -->
 <div class="row mt-5">
     <div class="col-12">
         <div class="card">
@@ -64,26 +106,37 @@
                 <div class="row">
                     <div class="col-md-6">
                         <h6>{{ lang == 'tr' and 'Sertifika Formatları' or 'Certificate Formats' }}</h6>
-                        <ul class="list-unstyled">
-                            <li><i class="bi bi-check-circle text-success"></i> <strong>PFX/P12</strong> - PKCS#12 ({{ lang == 'tr' and 'sertifika + key paketi' or 'certificate + key bundle' }})</li>
-                            <li><i class="bi bi-check-circle text-success"></i> <strong>PEM</strong> - Base64 encoded ({{ lang == 'tr' and 'en yaygın format' or 'most common format' }})</li>
-                            <li><i class="bi bi-check-circle text-success"></i> <strong>DER</strong> - Binary encoded</li>
-                            <li><i class="bi bi-check-circle text-success"></i> <strong>CER/CRT</strong> - {{ lang == 'tr' and 'Sertifika dosyası' or 'Certificate file' }}</li>
-                            <li><i class="bi bi-check-circle text-success"></i> <strong>P7B</strong> - PKCS#7 ({{ lang == 'tr' and 'sertifika zinciri' or 'certificate chain' }})</li>
-                        </ul>
+                        <div class="format-badges">
+                            <span class="badge bg-primary format-badge">PFX/P12</span>
+                            <span class="badge bg-success format-badge">PEM</span>
+                            <span class="badge bg-info format-badge">DER</span>
+                            <span class="badge bg-warning text-dark format-badge">P7B</span>
+                            <span class="badge bg-danger format-badge">JKS</span>
+                            <span class="badge bg-secondary format-badge">CER/CRT</span>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <h6>{{ lang == 'tr' and 'Key Türleri' or 'Key Types' }}</h6>
-                        <ul class="list-unstyled">
-                            <li><i class="bi bi-key text-primary"></i> <strong>RSA 2048-bit</strong> - {{ lang == 'tr' and 'Standart güvenlik' or 'Standard security' }}</li>
-                            <li><i class="bi bi-key text-primary"></i> <strong>RSA 4096-bit</strong> - {{ lang == 'tr' and 'Yüksek güvenlik' or 'High security' }}</li>
-                            <li><i class="bi bi-key text-primary"></i> <strong>ECDSA P-256</strong> - {{ lang == 'tr' and 'Elliptic Curve' or 'Elliptic Curve' }}</li>
-                            <li><i class="bi bi-key text-primary"></i> <strong>ECDSA P-384</strong> - {{ lang == 'tr' and 'Elliptic Curve (güçlü)' or 'Elliptic Curve (stronger)' }}</li>
-                        </ul>
+                        <div class="format-badges">
+                            <span class="badge bg-dark format-badge">RSA 2048</span>
+                            <span class="badge bg-dark format-badge">RSA 4096</span>
+                            <span class="badge bg-secondary format-badge">ECDSA P-256</span>
+                            <span class="badge bg-secondary format-badge">ECDSA P-384</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+</script>
 {% endblock %}

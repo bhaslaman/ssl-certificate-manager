@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="bi bi-diagram-3 text-primary"></i>
+    {{ t.lifecycle.title }}
+</h2>
+
+<p class="lead text-muted mb-4">{{ t.lifecycle.description }}</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <!-- SSL Lifecycle Flow Diagram -->
+        <div class="lifecycle-flow">
+            <!-- Step 1: Private Key -->
+            <div class="lifecycle-step">
+                <a href="/generate?lang={{ lang }}" class="lifecycle-node" data-bs-toggle="tooltip"
+                   title="{{ t.lifecycle.steps.key.tooltip }}">
+                    <i class="bi bi-key-fill"></i>
+                    <span>{{ t.lifecycle.steps.key.title }}</span>
+                </a>
+                <div class="lifecycle-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+
+            <!-- Step 2: CSR -->
+            <div class="lifecycle-step">
+                <a href="/generate?lang={{ lang }}" class="lifecycle-node" data-bs-toggle="tooltip"
+                   title="{{ t.lifecycle.steps.csr.tooltip }}">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                    <span>CSR</span>
+                </a>
+                <div class="lifecycle-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+
+            <!-- Step 3: CA Sign -->
+            <div class="lifecycle-step">
+                <div class="lifecycle-node lifecycle-external" data-bs-toggle="tooltip"
+                     title="{{ t.lifecycle.steps.ca.tooltip }}">
+                    <i class="bi bi-building-fill"></i>
+                    <span>{{ t.lifecycle.steps.ca.title }}</span>
+                </div>
+                <div class="lifecycle-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+
+            <!-- Step 4: Certificate -->
+            <div class="lifecycle-step">
+                <a href="/analyze?lang={{ lang }}" class="lifecycle-node" data-bs-toggle="tooltip"
+                   title="{{ t.lifecycle.steps.cert.tooltip }}">
+                    <i class="bi bi-file-earmark-lock-fill"></i>
+                    <span>{{ t.lifecycle.steps.cert.title }}</span>
+                </a>
+                <div class="lifecycle-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+
+            <!-- Step 5: Export -->
+            <div class="lifecycle-step">
+                <a href="/convert?lang={{ lang }}" class="lifecycle-node" data-bs-toggle="tooltip"
+                   title="{{ t.lifecycle.steps.export.tooltip }}">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>{{ t.lifecycle.steps.export.title }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Step Details -->
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-1-circle"></i> {{ t.lifecycle.steps.key.title }}
+            </div>
+            <div class="card-body">
+                <p>{{ t.lifecycle.steps.key.description }}</p>
+                <ul class="small">
+                    <li>RSA 2048/4096 bit</li>
+                    <li>ECDSA P-256/P-384</li>
+                </ul>
+                <a href="/generate?lang={{ lang }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-plus-circle"></i> {{ t.lifecycle.go_to_generate }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-2-circle"></i> CSR
+            </div>
+            <div class="card-body">
+                <p>{{ t.lifecycle.steps.csr.description }}</p>
+                <ul class="small">
+                    <li>Subject (CN, O, OU, C, ST, L)</li>
+                    <li>SAN (DNS, IP)</li>
+                </ul>
+                <a href="/generate?lang={{ lang }}" class="btn btn-outline-info btn-sm">
+                    <i class="bi bi-file-earmark-text"></i> {{ t.lifecycle.go_to_generate }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <i class="bi bi-3-circle"></i> {{ t.lifecycle.steps.ca.title }}
+            </div>
+            <div class="card-body">
+                <p>{{ t.lifecycle.steps.ca.description }}</p>
+                <ul class="small">
+                    <li>DigiCert, Comodo, Let's Encrypt</li>
+                    <li>{{ t.lifecycle.or_self_signed }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-4-circle"></i> {{ t.lifecycle.steps.cert.title }}
+            </div>
+            <div class="card-body">
+                <p>{{ t.lifecycle.steps.cert.description }}</p>
+                <ul class="small">
+                    <li>{{ t.lifecycle.formats }}: PEM, DER, CRT, CER</li>
+                    <li>{{ t.lifecycle.check_validity }}</li>
+                </ul>
+                <div class="btn-group">
+                    <a href="/analyze?lang={{ lang }}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-search"></i> {{ t.lifecycle.go_to_analyze }}
+                    </a>
+                    <a href="/check?lang={{ lang }}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-globe"></i> {{ t.lifecycle.go_to_check }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-secondary text-white">
+                <i class="bi bi-5-circle"></i> {{ t.lifecycle.steps.export.title }}
+            </div>
+            <div class="card-body">
+                <p>{{ t.lifecycle.steps.export.description }}</p>
+                <ul class="small">
+                    <li>PFX/P12 (Windows, IIS)</li>
+                    <li>JKS (Java, Tomcat)</li>
+                    <li>PEM (Apache, Nginx)</li>
+                </ul>
+                <a href="/convert?lang={{ lang }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left-right"></i> {{ t.lifecycle.go_to_convert }}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+</script>
+<style>
+    .lifecycle-flow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 30px 0;
+    }
+
+    .lifecycle-step {
+        display: flex;
+        align-items: center;
+    }
+
+    .lifecycle-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: var(--bs-primary);
+        color: white;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .lifecycle-node:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        color: white;
+    }
+
+    .lifecycle-node i {
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+
+    .lifecycle-node span {
+        font-size: 0.75rem;
+        text-align: center;
+    }
+
+    .lifecycle-node.lifecycle-external {
+        background: var(--bs-warning);
+        color: #000;
+        cursor: help;
+    }
+
+    .lifecycle-arrow {
+        padding: 0 15px;
+        color: var(--bs-secondary);
+        font-size: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .lifecycle-flow {
+            flex-direction: column;
+        }
+
+        .lifecycle-arrow {
+            transform: rotate(90deg);
+            padding: 10px 0;
+        }
+    }
+</style>
+{% endblock %}

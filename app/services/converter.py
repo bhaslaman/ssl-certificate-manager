@@ -9,19 +9,37 @@ from typing import Tuple, Optional
 import tempfile
 import subprocess
 import os
+import io
+import zipfile
 
 
 class CertificateConverter:
     """Handles all certificate format conversions."""
 
     @staticmethod
-    def pfx_to_pem(pfx_data: bytes, password: str = "") -> Tuple[str, str, str]:
+    def pfx_to_pem(
+        pfx_data: bytes,
+        password: str = "",
+        key_format: str = "pkcs8"
+    ) -> Tuple[str, str, str]:
         """
         Convert PFX/P12 to PEM format.
         Returns: (certificate_pem, private_key_pem, chain_pem)
         Supports legacy encryption algorithms (RC2, 3DES, etc.)
+
+        Args:
+            pfx_data: PFX file bytes
+            password: PFX password
+            key_format: "pkcs8" (default) or "traditional" for TraditionalOpenSSL
         """
         pwd = password.encode() if password else None
+
+        # Determine key format
+        private_format = (
+            serialization.PrivateFormat.PKCS8
+            if key_format == "pkcs8"
+            else serialization.PrivateFormat.TraditionalOpenSSL
+        )
 
         # Try modern cryptography library first
         try:
@@ -35,7 +53,7 @@ class CertificateConverter:
             if private_key:
                 key_pem = private_key.private_bytes(
                     encoding=serialization.Encoding.PEM,
-                    format=serialization.PrivateFormat.TraditionalOpenSSL,
+                    format=private_format,
                     encryption_algorithm=serialization.NoEncryption()
                 ).decode()
 
@@ -49,13 +67,17 @@ class CertificateConverter:
         except Exception as e:
             # Fallback to pyOpenSSL for legacy encryption (RC2, DES, etc.)
             try:
-                return CertificateConverter._pfx_to_pem_legacy(pfx_data, password)
+                return CertificateConverter._pfx_to_pem_legacy(pfx_data, password, key_format)
             except Exception:
                 # Last resort: use openssl command with legacy provider
-                return CertificateConverter._pfx_to_pem_openssl(pfx_data, password)
+                return CertificateConverter._pfx_to_pem_openssl(pfx_data, password, key_format)
 
     @staticmethod
-    def _pfx_to_pem_legacy(pfx_data: bytes, password: str = "") -> Tuple[str, str, str]:
+    def _pfx_to_pem_legacy(
+        pfx_data: bytes,
+        password: str = "",
+        key_format: str = "pkcs8"
+    ) -> Tuple[str, str, str]:
         """Fallback using pyOpenSSL for legacy encrypted PFX files."""
         p12 = crypto.load_pkcs12(pfx_data, password.encode() if password else b"")
 
@@ -71,7 +93,19 @@ class CertificateConverter:
         # Extract private key
         pkey = p12.get_privatekey()
         if pkey:
+            # pyOpenSSL outputs TraditionalOpenSSL format by default
             key_pem = crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey).decode()
+
+            # Convert to PKCS8 if requested
+            if key_format == "pkcs8":
+                private_key = serialization.load_pem_private_key(
+                    key_pem.encode(), password=None, backend=default_backend()
+                )
+                key_pem = private_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.PKCS8,
+                    encryption_algorithm=serialization.NoEncryption()
+                ).decode()
 
         # Extract CA chain
         ca_certs = p12.get_ca_certificates()
@@ -82,7 +116,11 @@ class CertificateConverter:
         return cert_pem, key_pem, chain_pem
 
     @staticmethod
-    def _pfx_to_pem_openssl(pfx_data: bytes, password: str = "") -> Tuple[str, str, str]:
+    def _pfx_to_pem_openssl(
+        pfx_data: bytes,
+        password: str = "",
+        key_format: str = "pkcs8"
+    ) -> Tuple[str, str, str]:
         """Last resort: use openssl CLI with legacy provider for very old PFX files."""
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pfx') as pfx_file:
             pfx_file.write(pfx_data)
@@ -107,6 +145,20 @@ class CertificateConverter:
             )
             key_pem = key_result.stdout
 
+            # Convert to PKCS8 if requested
+            if key_pem and key_format == "pkcs8":
+                try:
+                    private_key = serialization.load_pem_private_key(
+                        key_pem.encode(), password=None, backend=default_backend()
+                    )
+                    key_pem = private_key.private_bytes(
+                        encoding=serialization.Encoding.PEM,
+                        format=serialization.PrivateFormat.PKCS8,
+                        encryption_algorithm=serialization.NoEncryption()
+                    ).decode()
+                except Exception:
+                    pass  # Keep original format if conversion fails
+
             # Extract CA chain
             chain_result = subprocess.run(
                 f'openssl pkcs12 -in "{pfx_path}" -cacerts -nokeys {pass_arg} -legacy 2>/dev/null || '
@@ -122,6 +174,42 @@ class CertificateConverter:
 
         finally:
             os.unlink(pfx_path)
+
+    @staticmethod
+    def pfx_to_pem_split(
+        pfx_data: bytes,
+        password: str = "",
+        key_format: str = "pkcs8",
+        base_filename: str = "certificate"
+    ) -> bytes:
+        """
+        Convert PFX/P12 to separate PEM files packaged in a ZIP.
+
+        Args:
+            pfx_data: PFX file bytes
+            password: PFX password
+            key_format: "pkcs8" (default) or "traditional" for TraditionalOpenSSL
+            base_filename: Base name for output files
+
+        Returns:
+            ZIP file bytes containing cert.pem, key.pem, and optionally chain.pem
+        """
+        cert_pem, key_pem, chain_pem = CertificateConverter.pfx_to_pem(
+            pfx_data, password, key_format
+        )
+
+        # Create ZIP in memory
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+            if cert_pem:
+                zf.writestr(f"{base_filename}.pem", cert_pem)
+            if key_pem:
+                zf.writestr(f"{base_filename}.key", key_pem)
+            if chain_pem:
+                zf.writestr(f"{base_filename}-chain.pem", chain_pem)
+
+        zip_buffer.seek(0)
+        return zip_buffer.getvalue()
 
     @staticmethod
     def pem_to_pfx(
@@ -221,14 +309,30 @@ class CertificateConverter:
     def extract_private_key(
         pfx_data: bytes,
         password: str = "",
-        new_password: str = ""
+        new_password: str = "",
+        key_format: str = "pkcs8"
     ) -> str:
-        """Extract private key from PFX file. Supports legacy encryption."""
+        """
+        Extract private key from PFX file. Supports legacy encryption.
+
+        Args:
+            pfx_data: PFX file bytes
+            password: PFX password
+            new_password: Optional password to encrypt the extracted key
+            key_format: "pkcs8" (default) or "traditional" for TraditionalOpenSSL
+        """
         # Use pfx_to_pem which handles legacy encryption
-        _, key_pem, _ = CertificateConverter.pfx_to_pem(pfx_data, password)
+        _, key_pem, _ = CertificateConverter.pfx_to_pem(pfx_data, password, key_format)
 
         if not key_pem:
             raise ValueError("No private key found in PFX file")
+
+        # Determine key format
+        private_format = (
+            serialization.PrivateFormat.PKCS8
+            if key_format == "pkcs8"
+            else serialization.PrivateFormat.TraditionalOpenSSL
+        )
 
         # If new password requested, re-encrypt the key
         if new_password:
@@ -238,7 +342,7 @@ class CertificateConverter:
             encryption = serialization.BestAvailableEncryption(new_password.encode())
             return private_key.private_bytes(
                 encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                format=private_format,
                 encryption_algorithm=encryption
             ).decode()
 

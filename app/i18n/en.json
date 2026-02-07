@@ -4,7 +4,11 @@
     "home": "Home",
     "convert": "Convert",
     "analyze": "Analyze",
-    "generate": "Generate"
+    "generate": "Generate",
+    "check": "Check",
+    "more": "More",
+    "lifecycle": "Lifecycle",
+    "docs": "Documentation"
   },
   "home": {
     "title": "SSL Certificate Management Tool",
@@ -21,6 +25,10 @@
       "generate": {
         "title": "Certificate Generation",
         "desc": "Create CSR, self-signed certificates and private keys"
+      },
+      "check": {
+        "title": "SSL Check",
+        "desc": "Check SSL certificate of any website"
       }
     }
   },
@@ -35,7 +43,10 @@
       "pem_to_p7b": "PEM → P7B",
       "p7b_to_pem": "P7B → PEM",
       "extract_key": "Extract Private Key",
-      "extract_cert": "Extract Certificate"
+      "extract_cert": "Extract Certificate",
+      "pfx_to_jks": "PFX → JKS",
+      "jks_to_pfx": "JKS → PFX",
+      "pem_to_jks": "PEM → JKS"
     },
     "file": "File",
     "certificate": "Certificate",
@@ -46,7 +57,16 @@
     "friendly_name": "Friendly Name",
     "convert_btn": "Convert",
     "download": "Download",
-    "copy": "Copy"
+    "copy": "Copy",
+    "key_format": "Private Key Format",
+    "recommended": "Recommended",
+    "legacy_compat": "Legacy compatibility",
+    "export_mode": "Export Mode",
+    "split_files": "Export as separate files",
+    "pfx_password": "PFX Password",
+    "jks_password": "JKS Password",
+    "alias": "Alias",
+    "export_all": "Leave empty to export all"
   },
   "analyze": {
     "title": "Certificate Analysis",
@@ -118,6 +138,113 @@
     "error": "Error",
     "copy_success": "Copied to clipboard",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "optional": "optional",
+    "toggle_theme": "Toggle theme"
+  },
+  "check": {
+    "title": "SSL Certificate Check",
+    "check_url": "Check URL",
+    "hostname": "Hostname",
+    "hostname_hint": "Enter domain name (e.g., google.com)",
+    "port": "Port",
+    "include_dns": "Include DNS information",
+    "check_btn": "Check SSL",
+    "placeholder": "Enter a hostname to check its SSL certificate",
+    "secure": "Secure",
+    "warning": "Warning",
+    "insecure": "Insecure",
+    "validation": "Validation",
+    "trusted": "Trusted Certificate",
+    "hostname_match": "Hostname Match",
+    "dns_info": "DNS Information"
+  },
+  "lifecycle": {
+    "title": "SSL Certificate Lifecycle",
+    "description": "Understand the complete SSL certificate lifecycle from key generation to deployment",
+    "steps": {
+      "key": {
+        "title": "Private Key",
+        "tooltip": "Generate a private key",
+        "description": "First, create a secure private key. This key will be used to sign your certificate."
+      },
+      "csr": {
+        "title": "CSR",
+        "tooltip": "Create Certificate Signing Request",
+        "description": "Create a Certificate Signing Request containing your organization information."
+      },
+      "ca": {
+        "title": "CA Sign",
+        "tooltip": "Certificate Authority signs your CSR",
+        "description": "Submit your CSR to a Certificate Authority to get it signed."
+      },
+      "cert": {
+        "title": "Certificate",
+        "tooltip": "Your signed certificate",
+        "description": "Receive your signed certificate from the CA and verify its validity."
+      },
+      "export": {
+        "title": "Export",
+        "tooltip": "Convert to deployment format",
+        "description": "Convert your certificate to the format required by your server or application."
+      }
+    },
+    "go_to_generate": "Generate",
+    "go_to_analyze": "Analyze",
+    "go_to_check": "Check",
+    "go_to_convert": "Convert",
+    "or_self_signed": "Or generate self-signed",
+    "formats": "Formats",
+    "check_validity": "Check expiration date"
+  },
+  "docs": {
+    "title": "Documentation",
+    "description": "Learn about SSL certificate formats, conversions, and API usage",
+    "formats": {
+      "title": "Certificate Formats",
+      "pem": {
+        "name": "PEM",
+        "desc": "Base64 encoded certificate with -----BEGIN CERTIFICATE----- header. Most common format for Apache, Nginx.",
+        "ext": ".pem, .crt, .cer, .key"
+      },
+      "der": {
+        "name": "DER",
+        "desc": "Binary encoded certificate. Used by Java platforms.",
+        "ext": ".der, .cer"
+      },
+      "pfx": {
+        "name": "PFX/P12",
+        "desc": "Binary format that can contain certificate, private key, and chain. Used by Windows/IIS.",
+        "ext": ".pfx, .p12"
+      },
+      "p7b": {
+        "name": "P7B/PKCS#7",
+        "desc": "Contains only certificates and chain, no private key. Used for CA bundles.",
+        "ext": ".p7b, .p7c"
+      },
+      "jks": {
+        "name": "JKS",
+        "desc": "Java KeyStore format. Used by Java applications like Tomcat.",
+        "ext": ".jks, .keystore"
+      },
+      "csr": {
+        "name": "CSR",
+        "desc": "Certificate Signing Request. Contains public key and subject info, sent to CA.",
+        "ext": ".csr"
+      }
+    },
+    "matrix": {
+      "title": "Conversion Matrix",
+      "from": "From",
+      "to": "To",
+      "supported": "Supported"
+    },
+    "api": {
+      "title": "API Endpoints",
+      "convert": "Conversion Endpoints",
+      "analyze": "Analysis Endpoints",
+      "generate": "Generation Endpoints",
+      "check": "Check Endpoints"
+    }
   }
 }

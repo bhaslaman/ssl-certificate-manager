@@ -1,67 +1,106 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}">
+<html lang="{{ lang }}" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ t.app_name }}</title>
+    <script>
+        // Apply theme immediately to prevent flash
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 </head>
 <body>
+    <!-- Top Navbar - Brand and Settings -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="/?lang={{ lang }}">
                 <i class="bi bi-shield-lock"></i> {{ t.app_name }}
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/?lang={{ lang }}">
-                            <i class="bi bi-house"></i> {{ t.nav.home }}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/convert?lang={{ lang }}">
-                            <i class="bi bi-arrow-left-right"></i> {{ t.nav.convert }}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/analyze?lang={{ lang }}">
-                            <i class="bi bi-search"></i> {{ t.nav.analyze }}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/generate?lang={{ lang }}">
-                            <i class="bi bi-plus-circle"></i> {{ t.nav.generate }}
-                        </a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="langDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-globe"></i> {{ 'TR' if lang == 'tr' else 'EN' }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="?lang=tr">Turkce</a></li>
-                            <li><a class="dropdown-item" href="?lang=en">English</a></li>
-                        </ul>
-                    </li>
-                </ul>
+            <div class="d-flex align-items-center">
+                <button class="btn nav-link text-white me-2" id="theme-toggle" onclick="toggleTheme()" title="{{ t.common.toggle_theme }}">
+                    <i class="bi bi-moon-fill" id="theme-icon"></i>
+                </button>
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="langDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-globe"></i> {{ 'TR' if lang == 'tr' else 'EN' }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="?lang=tr">Turkce</a></li>
+                        <li><a class="dropdown-item" href="?lang=en">English</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
+
+    <!-- Secondary Navigation - Tabs -->
+    <div class="nav-tabs-container border-bottom shadow-sm">
+        <div class="container">
+            <ul class="nav nav-pills nav-fill flex-nowrap overflow-auto py-2" id="mainNav">
+                <li class="nav-item">
+                    <a class="nav-link nav-tab-link" href="/?lang={{ lang }}">
+                        <i class="bi bi-house"></i>
+                        <span class="nav-label">{{ t.nav.home }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-tab-link" href="/convert?lang={{ lang }}">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span class="nav-label">{{ t.nav.convert }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-tab-link" href="/analyze?lang={{ lang }}">
+                        <i class="bi bi-search"></i>
+                        <span class="nav-label">{{ t.nav.analyze }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-tab-link" href="/generate?lang={{ lang }}">
+                        <i class="bi bi-plus-circle"></i>
+                        <span class="nav-label">{{ t.nav.generate }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-tab-link" href="/check?lang={{ lang }}">
+                        <i class="bi bi-globe-americas"></i>
+                        <span class="nav-label">{{ t.nav.check }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-tab-link" href="/lifecycle?lang={{ lang }}">
+                        <i class="bi bi-diagram-3"></i>
+                        <span class="nav-label">{{ t.nav.lifecycle }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-tab-link" href="/docs-page?lang={{ lang }}">
+                        <i class="bi bi-book"></i>
+                        <span class="nav-label">{{ t.nav.docs }}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
     <main class="container py-4">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="footer mt-auto py-3 bg-light">
+    <footer class="footer mt-auto py-3">
         <div class="container text-center">
-            <span class="text-muted">SSL Certificate Manager v1.0</span>
+            <span class="text-muted">SSL Certificate Manager v2.0</span>
+            <span id="update-badge" class="badge bg-info ms-2 d-none" style="cursor: pointer;" onclick="window.open(this.dataset.url, '_blank')">
+                <i class="bi bi-arrow-up-circle"></i> <span id="update-version"></span>
+            </span>
         </div>
     </footer>
 

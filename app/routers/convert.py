@@ -4,6 +4,7 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import Response
 from typing import Optional
 from ..services.converter import CertificateConverter
+from ..services.jks_converter import JKSConverter
 
 router = APIRouter(prefix="/api/convert", tags=["conversion"])
 
@@ -11,18 +12,46 @@ router = APIRouter(prefix="/api/convert", tags=["conversion"])
 @router.post("/pfx-to-pem")
 async def pfx_to_pem(
     file: UploadFile = File(...),
-    password: str = Form("")
+    password: str = Form(""),
+    key_format: str = Form("pkcs8"),
+    export_mode: str = Form("bundle")
 ):
-    """Convert PFX/P12 to PEM format."""
+    """
+    Convert PFX/P12 to PEM format.
+
+    Args:
+        file: PFX/P12 file
+        password: PFX password
+        key_format: "pkcs8" (default) or "traditional" for TraditionalOpenSSL format
+        export_mode: "bundle" (default) returns JSON, "split" returns ZIP with separate files
+    """
     try:
         pfx_data = await file.read()
-        cert_pem, key_pem, chain_pem = CertificateConverter.pfx_to_pem(pfx_data, password)
+        base_filename = file.filename.rsplit(".", 1)[0] if file.filename else "certificate"
+
+        # Split mode: return ZIP file with separate cert, key, chain files
+        if export_mode == "split":
+            zip_data = CertificateConverter.pfx_to_pem_split(
+                pfx_data, password, key_format, base_filename
+            )
+            return Response(
+                content=zip_data,
+                media_type="application/zip",
+                headers={
+                    "Content-Disposition": f'attachment; filename="{base_filename}.zip"'
+                }
+            )
+
+        # Bundle mode: return JSON with all PEM data
+        cert_pem, key_pem, chain_pem = CertificateConverter.pfx_to_pem(
+            pfx_data, password, key_format
+        )
 
         return {
             "certificate": cert_pem,
             "private_key": key_pem,
             "chain": chain_pem,
-            "filename": file.filename.rsplit(".", 1)[0] if file.filename else "certificate"
+            "filename": base_filename
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -146,12 +175,23 @@ async def p7b_to_pem(
 async def extract_key(
     file: UploadFile = File(...),
     password: str = Form(""),
-    new_password: str = Form("")
+    new_password: str = Form(""),
+    key_format: str = Form("pkcs8")
 ):
-    """Extract private key from PFX file."""
+    """
+    Extract private key from PFX file.
+
+    Args:
+        file: PFX/P12 file
+        password: PFX password
+        new_password: Optional password to encrypt the extracted key
+        key_format: "pkcs8" (default) or "traditional" for TraditionalOpenSSL format
+    """
     try:
         pfx_data = await file.read()
-        key_pem = CertificateConverter.extract_private_key(pfx_data, password, new_password)
+        key_pem = CertificateConverter.extract_private_key(
+            pfx_data, password, new_password, key_format
+        )
 
         filename = file.filename.rsplit(".", 1)[0] if file.filename else "private_key"
 
@@ -241,6 +281,139 @@ async def key_der_to_pem(
         return {
             "private_key": key_pem,
             "filename": filename
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# ==================== JKS ENDPOINTS ====================
+
+@router.post("/pfx-to-jks")
+async def pfx_to_jks(
+    file: UploadFile = File(...),
+    pfx_password: str = Form(""),
+    jks_password: str = Form(""),
+    alias: str = Form("certificate")
+):
+    """
+    Convert PFX/P12 to JKS (Java KeyStore) format.
+
+    Args:
+        file: PFX/P12 file
+        pfx_password: PFX password
+        jks_password: Password for output JKS
+        alias: Alias for the entry in JKS
+    """
+    try:
+        pfx_data = await file.read()
+        jks_data = JKSConverter.pfx_to_jks(pfx_data, pfx_password, jks_password, alias)
+
+        filename = file.filename.rsplit(".", 1)[0] if file.filename else "keystore"
+
+        return Response(
+            content=jks_data,
+            media_type="application/octet-stream",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}.jks"'
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/jks-to-pfx")
+async def jks_to_pfx(
+    file: UploadFile = File(...),
+    jks_password: str = Form(""),
+    pfx_password: str = Form(""),
+    alias: str = Form("")
+):
+    """
+    Convert JKS (Java KeyStore) to PFX/P12 format.
+
+    Args:
+        file: JKS file
+        jks_password: JKS password
+        pfx_password: Password for output PFX
+        alias: Specific alias to export (optional, exports all if empty)
+    """
+    try:
+        jks_data = await file.read()
+        pfx_data = JKSConverter.jks_to_pfx(jks_data, jks_password, pfx_password, alias)
+
+        filename = file.filename.rsplit(".", 1)[0] if file.filename else "certificate"
+
+        return Response(
+            content=pfx_data,
+            media_type="application/x-pkcs12",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}.pfx"'
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/pem-to-jks")
+async def pem_to_jks(
+    cert_file: UploadFile = File(...),
+    key_file: UploadFile = File(...),
+    chain_file: Optional[UploadFile] = File(None),
+    jks_password: str = Form(""),
+    alias: str = Form("certificate")
+):
+    """
+    Convert PEM certificate and key to JKS format.
+
+    Args:
+        cert_file: Certificate PEM file
+        key_file: Private key PEM file
+        chain_file: Optional certificate chain PEM file
+        jks_password: Password for output JKS
+        alias: Alias for the entry
+    """
+    try:
+        cert_pem = await cert_file.read()
+        key_pem = await key_file.read()
+        chain_pem = await chain_file.read() if chain_file else None
+
+        jks_data = JKSConverter.pem_to_jks(cert_pem, key_pem, jks_password, alias, chain_pem)
+
+        filename = cert_file.filename.rsplit(".", 1)[0] if cert_file.filename else "keystore"
+
+        return Response(
+            content=jks_data,
+            media_type="application/octet-stream",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}.jks"'
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/jks-aliases")
+async def jks_aliases(
+    file: UploadFile = File(...),
+    jks_password: str = Form("")
+):
+    """
+    List all aliases in a JKS keystore.
+
+    Args:
+        file: JKS file
+        jks_password: JKS password
+
+    Returns:
+        List of aliases with type and creation date
+    """
+    try:
+        jks_data = await file.read()
+        aliases = JKSConverter.list_aliases(jks_data, jks_password)
+
+        return {
+            "aliases": aliases,
+            "filename": file.filename
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

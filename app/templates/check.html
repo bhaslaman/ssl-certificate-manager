@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="bi bi-globe-americas text-primary"></i>
+    {{ t.check.title }}
+</h2>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ t.check.check_url }}</h5>
+            </div>
+            <div class="card-body">
+                <form id="check-form">
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.check.hostname }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                            <input type="text" class="form-control" id="hostname"
+                                   placeholder="example.com" required>
+                        </div>
+                        <small class="text-muted">{{ t.check.hostname_hint }}</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ t.check.port }}</label>
+                        <input type="number" class="form-control" id="port" value="443" min="1" max="65535">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="check-dns">
+                        <label class="form-check-label" for="check-dns">{{ t.check.include_dns }}</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100" id="check-btn">
+                        <i class="bi bi-shield-check"></i> {{ t.check.check_btn }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <!-- Placeholder -->
+        <div id="check-placeholder" class="card h-100">
+            <div class="card-body d-flex align-items-center justify-content-center text-muted">
+                <div class="text-center">
+                    <i class="bi bi-shield-lock" style="font-size: 4rem;"></i>
+                    <p class="mt-3">{{ t.check.placeholder }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="check-result" class="card d-none">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-shield-check text-success" id="result-icon"></i>
+                    <span id="result-hostname"></span>
+                </h5>
+                <span id="result-badge" class="badge"></span>
+            </div>
+            <div class="card-body">
+                <div id="result-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('check-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const hostname = document.getElementById('hostname').value;
+        const port = parseInt(document.getElementById('port').value) || 443;
+        const checkDns = document.getElementById('check-dns').checked;
+
+        const btn = document.getElementById('check-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> ' + window.T.common.loading;
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/check/url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    hostname: hostname,
+                    port: port,
+                    check_dns: checkDns
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                displayCheckResult(data);
+                showToast(window.T.common.success);
+            } else {
+                showToast(data.detail, 'error');
+            }
+        } catch (err) {
+            showToast(err.message, 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    });
+
+    function displayCheckResult(data) {
+        document.getElementById('check-placeholder').classList.add('d-none');
+        const resultDiv = document.getElementById('check-result');
+        const contentDiv = document.getElementById('result-content');
+        resultDiv.classList.remove('d-none');
+
+        // Set header
+        document.getElementById('result-hostname').textContent = data.hostname + ':' + data.port;
+
+        // Set badge based on validation
+        const badge = document.getElementById('result-badge');
+        const icon = document.getElementById('result-icon');
+        const cert = data.certificate;
+
+        if (data.validation?.trusted && cert?.validity?.is_valid) {
+            badge.className = 'badge bg-success';
+            badge.textContent = window.T.check.secure;
+            icon.className = 'bi bi-shield-check text-success';
+        } else if (cert?.validity?.is_valid) {
+            badge.className = 'badge bg-warning text-dark';
+            badge.textContent = window.T.check.warning;
+            icon.className = 'bi bi-shield-exclamation text-warning';
+        } else {
+            badge.className = 'badge bg-danger';
+            badge.textContent = window.T.check.insecure;
+            icon.className = 'bi bi-shield-x text-danger';
+        }
+
+        const t = window.T.check;
+        let html = '';
+
+        // Certificate info
+        if (cert) {
+            // Validity status
+            const daysRemaining = cert.validity?.days_remaining || 0;
+            let validityBadge = '';
+            if (cert.validity?.is_valid) {
+                if (daysRemaining < 30) {
+                    validityBadge = `<span class="badge bg-warning text-dark">${daysRemaining} ${window.T.analyze.result.days_remaining}</span>`;
+                } else {
+                    validityBadge = `<span class="badge bg-success">${window.T.analyze.result.valid}</span>`;
+                }
+            } else {
+                validityBadge = `<span class="badge bg-danger">${window.T.analyze.result.expired}</span>`;
+            }
+
+            html += `
+                <div class="cert-info-section">
+                    <h6><i class="bi bi-calendar"></i> ${window.T.analyze.result.validity} ${validityBadge}</h6>
+                    <table class="cert-info-table">
+                        <tr><td>${window.T.analyze.result.not_before}</td><td>${cert.validity?.not_before || '-'}</td></tr>
+                        <tr><td>${window.T.analyze.result.not_after}</td><td>${cert.validity?.not_after || '-'}</td></tr>
+                        <tr><td>${window.T.analyze.result.days_remaining}</td><td>${daysRemaining}</td></tr>
+                    </table>
+                </div>
+            `;
+
+            // Subject
+            if (cert.subject) {
+                html += `
+                    <div class="cert-info-section">
+                        <h6><i class="bi bi-person"></i> ${window.T.analyze.result.subject}</h6>
+                        <table class="cert-info-table">
+                            ${Object.entries(cert.subject).map(([k, v]) => `<tr><td>${k}</td><td>${escapeHtml(v)}</td></tr>`).join('')}
+                        </table>
+                    </div>
+                `;
+            }
+
+            // Issuer
+            if (cert.issuer) {
+                html += `
+                    <div class="cert-info-section">
+                        <h6><i class="bi bi-building"></i> ${window.T.analyze.result.issuer}</h6>
+                        <table class="cert-info-table">
+                            ${Object.entries(cert.issuer).map(([k, v]) => `<tr><td>${k}</td><td>${escapeHtml(v)}</td></tr>`).join('')}
+                        </table>
+                    </div>
+                `;
+            }
+
+            // SANs
+            if (cert.sans?.length) {
+                html += `
+                    <div class="cert-info-section">
+                        <h6><i class="bi bi-globe"></i> ${window.T.analyze.result.san}</h6>
+                        <ul class="san-list">
+                            ${cert.sans.map(san =>
+                                `<li><span class="badge bg-secondary">${san.type}</span>${escapeHtml(san.value)}</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Fingerprints
+            if (cert.fingerprints) {
+                html += `
+                    <div class="cert-info-section">
+                        <h6><i class="bi bi-fingerprint"></i> ${window.T.analyze.result.fingerprints}</h6>
+                        <table class="cert-info-table">
+                            <tr><td>SHA-256</td><td class="fingerprint">${cert.fingerprints.sha256}</td></tr>
+                            <tr><td>SHA-1</td><td class="fingerprint">${cert.fingerprints.sha1}</td></tr>
+                        </table>
+                    </div>
+                `;
+            }
+        }
+
+        // Validation
+        if (data.validation) {
+            const v = data.validation;
+            html += `
+                <div class="cert-info-section">
+                    <h6><i class="bi bi-patch-check"></i> ${t.validation}</h6>
+                    <table class="cert-info-table">
+                        <tr>
+                            <td>${t.trusted}</td>
+                            <td>${v.trusted ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-x-circle text-danger"></i>'}</td>
+                        </tr>
+                        <tr>
+                            <td>${t.hostname_match}</td>
+                            <td>${v.hostname_match ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-x-circle text-danger"></i>'}</td>
+                        </tr>
+                    </table>
+                    ${v.errors?.length ? `<div class="alert alert-danger mt-2 mb-0"><small>${v.errors.join('<br>')}</small></div>` : ''}
+                </div>
+            `;
+        }
+
+        // DNS info
+        if (data.dns_info) {
+            html += `
+                <div class="cert-info-section">
+                    <h6><i class="bi bi-diagram-3"></i> ${t.dns_info}</h6>
+                    <table class="cert-info-table">
+                        <tr><td>IP</td><td>${data.dns_info.resolved_ips?.join(', ') || '-'}</td></tr>
+                    </table>
+                </div>
+            `;
+        }
+
+        contentDiv.innerHTML = html;
+    }
+</script>
+{% endblock %}

@@ -2,8 +2,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install OpenSSL
-RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+# Install OpenSSL and OpenJDK for JKS support
+RUN apt-get update && apt-get install -y \
+    openssl \
+    openjdk-21-jre-headless \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Java environment
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH="$JAVA_HOME/bin:$PATH"
 
 # Enable OpenSSL legacy provider for RC2, DES, etc.
 RUN sed -i 's/default = default_sect/default = default_sect\nlegacy = legacy_sect/' /etc/ssl/openssl.cnf && \

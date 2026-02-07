@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="bi bi-book text-primary"></i>
+    {{ t.docs.title }}
+</h2>
+
+<p class="lead text-muted mb-4">{{ t.docs.description }}</p>
+
+<!-- Certificate Formats -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> {{ t.docs.formats.title }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <strong>{{ t.docs.formats.pem.name }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <p class="small">{{ t.docs.formats.pem.desc }}</p>
+                        <code class="small">{{ t.docs.formats.pem.ext }}</code>
+                        <pre class="pem-output mt-2 small" style="max-height: 100px;">-----BEGIN CERTIFICATE-----
+MIIDdzCCAl+gAwIBAgIJAO...
+-----END CERTIFICATE-----</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-secondary">
+                    <div class="card-header bg-secondary text-white">
+                        <strong>{{ t.docs.formats.der.name }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <p class="small">{{ t.docs.formats.der.desc }}</p>
+                        <code class="small">{{ t.docs.formats.der.ext }}</code>
+                        <div class="alert alert-secondary small mt-2 mb-0">
+                            <i class="bi bi-file-binary"></i> Binary format
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-success">
+                    <div class="card-header bg-success text-white">
+                        <strong>{{ t.docs.formats.pfx.name }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <p class="small">{{ t.docs.formats.pfx.desc }}</p>
+                        <code class="small">{{ t.docs.formats.pfx.ext }}</code>
+                        <div class="mt-2">
+                            <span class="badge bg-success">Certificate</span>
+                            <span class="badge bg-warning text-dark">Private Key</span>
+                            <span class="badge bg-info">Chain</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-info">
+                    <div class="card-header bg-info text-white">
+                        <strong>{{ t.docs.formats.p7b.name }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <p class="small">{{ t.docs.formats.p7b.desc }}</p>
+                        <code class="small">{{ t.docs.formats.p7b.ext }}</code>
+                        <div class="mt-2">
+                            <span class="badge bg-info">Certificates only</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        <strong>{{ t.docs.formats.jks.name }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <p class="small">{{ t.docs.formats.jks.desc }}</p>
+                        <code class="small">{{ t.docs.formats.jks.ext }}</code>
+                        <div class="mt-2">
+                            <span class="badge bg-warning text-dark"><i class="bi bi-cup-hot"></i> Java</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-dark">
+                    <div class="card-header bg-dark text-white">
+                        <strong>{{ t.docs.formats.csr.name }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <p class="small">{{ t.docs.formats.csr.desc }}</p>
+                        <code class="small">{{ t.docs.formats.csr.ext }}</code>
+                        <pre class="pem-output mt-2 small" style="max-height: 100px;">-----BEGIN CERTIFICATE REQUEST-----
+MIICvDCCAaQCAQAwdzE...
+-----END CERTIFICATE REQUEST-----</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conversion Matrix -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-table"></i> {{ t.docs.matrix.title }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>{{ t.docs.matrix.from }} \ {{ t.docs.matrix.to }}</th>
+                        <th>PEM</th>
+                        <th>DER</th>
+                        <th>PFX</th>
+                        <th>P7B</th>
+                        <th>JKS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="table-dark">PEM</th>
+                        <td>-</td>
+                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <th class="table-dark">DER</th>
+                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                        <td>-</td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                    </tr>
+                    <tr>
+                        <th class="table-dark">PFX</th>
+                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                        <td>-</td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <th class="table-dark">P7B</th>
+                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                        <td>-</td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                    </tr>
+                    <tr>
+                        <th class="table-dark">JKS</th>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                        <td><i class="bi bi-check-circle-fill text-success"></i></td>
+                        <td><i class="bi bi-x-circle text-muted"></i></td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- API Endpoints -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-code-slash"></i> {{ t.docs.api.title }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="accordion" id="apiAccordion">
+            <!-- Convert Endpoints -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConvert">
+                        <i class="bi bi-arrow-left-right me-2"></i> {{ t.docs.api.convert }}
+                    </button>
+                </h2>
+                <div id="collapseConvert" class="accordion-collapse collapse show" data-bs-parent="#apiAccordion">
+                    <div class="accordion-body">
+                        <table class="table table-sm">
+                            <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/pfx-to-pem</code></td><td>Convert PFX to PEM</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/pem-to-pfx</code></td><td>Convert PEM to PFX</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/pem-to-der</code></td><td>Convert PEM to DER</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/der-to-pem</code></td><td>Convert DER to PEM</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/pem-to-p7b</code></td><td>Convert PEM to P7B</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/p7b-to-pem</code></td><td>Convert P7B to PEM</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/pfx-to-jks</code></td><td>Convert PFX to JKS</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/jks-to-pfx</code></td><td>Convert JKS to PFX</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/pem-to-jks</code></td><td>Convert PEM to JKS</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/extract-key</code></td><td>Extract private key from PFX</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/convert/extract-cert</code></td><td>Extract certificate from PFX</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analyze Endpoints -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAnalyze">
+                        <i class="bi bi-search me-2"></i> {{ t.docs.api.analyze }}
+                    </button>
+                </h2>
+                <div id="collapseAnalyze" class="accordion-collapse collapse" data-bs-parent="#apiAccordion">
+                    <div class="accordion-body">
+                        <table class="table table-sm">
+                            <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/analyze/certificate</code></td><td>Analyze certificate file</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/analyze/csr</code></td><td>Analyze CSR file</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/analyze/chain</code></td><td>Analyze certificate chain</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/analyze/verify-match</code></td><td>Verify key-certificate match</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/analyze/certificate-text</code></td><td>Analyze PEM from text</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Endpoints -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGenerate">
+                        <i class="bi bi-plus-circle me-2"></i> {{ t.docs.api.generate }}
+                    </button>
+                </h2>
+                <div id="collapseGenerate" class="accordion-collapse collapse" data-bs-parent="#apiAccordion">
+                    <div class="accordion-body">
+                        <table class="table table-sm">
+                            <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/generate/private-key</code></td><td>Generate private key</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/generate/csr</code></td><td>Generate CSR</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/generate/self-signed</code></td><td>Generate self-signed certificate</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/generate/ca</code></td><td>Generate CA certificate</td></tr>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/generate/key-and-cert</code></td><td>Generate key and certificate</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Check Endpoints -->
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCheck">
+                        <i class="bi bi-globe-americas me-2"></i> {{ t.docs.api.check }}
+                    </button>
+                </h2>
+                <div id="collapseCheck" class="accordion-collapse collapse" data-bs-parent="#apiAccordion">
+                    <div class="accordion-body">
+                        <table class="table table-sm">
+                            <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/check/url</code></td><td>Check SSL certificate of URL</td></tr>
+                            </tbody>
+                        </table>
+                        <h6 class="mt-3">Example Request:</h6>
+                        <pre class="pem-output small">{
+    "hostname": "google.com",
+    "port": 443,
+    "check_dns": true
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

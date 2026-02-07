@@ -4,7 +4,11 @@
     "home": "Ana Sayfa",
     "convert": "Dönüştür",
     "analyze": "Analiz Et",
-    "generate": "Oluştur"
+    "generate": "Oluştur",
+    "check": "Kontrol",
+    "more": "Daha Fazla",
+    "lifecycle": "Yaşam Döngüsü",
+    "docs": "Dokümantasyon"
   },
   "home": {
     "title": "SSL Sertifika Yönetim Aracı",
@@ -21,6 +25,10 @@
       "generate": {
         "title": "Sertifika Oluşturma",
         "desc": "CSR, self-signed sertifika ve private key oluşturun"
+      },
+      "check": {
+        "title": "SSL Kontrolü",
+        "desc": "Herhangi bir web sitesinin SSL sertifikasını kontrol edin"
       }
     }
   },
@@ -35,7 +43,10 @@
       "pem_to_p7b": "PEM → P7B",
       "p7b_to_pem": "P7B → PEM",
       "extract_key": "Private Key Çıkar",
-      "extract_cert": "Sertifika Çıkar"
+      "extract_cert": "Sertifika Çıkar",
+      "pfx_to_jks": "PFX → JKS",
+      "jks_to_pfx": "JKS → PFX",
+      "pem_to_jks": "PEM → JKS"
     },
     "file": "Dosya",
     "certificate": "Sertifika",
@@ -46,7 +57,16 @@
     "friendly_name": "Sertifika Adı",
     "convert_btn": "Dönüştür",
     "download": "İndir",
-    "copy": "Kopyala"
+    "copy": "Kopyala",
+    "key_format": "Private Key Formatı",
+    "recommended": "Önerilen",
+    "legacy_compat": "Eski sistem uyumluluğu",
+    "export_mode": "Dışa Aktarma Modu",
+    "split_files": "Ayrı dosyalar olarak dışa aktar",
+    "pfx_password": "PFX Şifresi",
+    "jks_password": "JKS Şifresi",
+    "alias": "Alias",
+    "export_all": "Tümünü dışa aktarmak için boş bırakın"
   },
   "analyze": {
     "title": "Sertifika Analizi",
@@ -118,6 +138,113 @@
     "error": "Hata",
     "copy_success": "Panoya kopyalandı",
     "yes": "Evet",
-    "no": "Hayır"
+    "no": "Hayır",
+    "optional": "opsiyonel",
+    "toggle_theme": "Tema değiştir"
+  },
+  "check": {
+    "title": "SSL Sertifika Kontrolü",
+    "check_url": "URL Kontrol",
+    "hostname": "Sunucu Adı",
+    "hostname_hint": "Alan adı girin (örn: google.com)",
+    "port": "Port",
+    "include_dns": "DNS bilgilerini dahil et",
+    "check_btn": "SSL Kontrol Et",
+    "placeholder": "SSL sertifikasını kontrol etmek için sunucu adı girin",
+    "secure": "Güvenli",
+    "warning": "Uyarı",
+    "insecure": "Güvensiz",
+    "validation": "Doğrulama",
+    "trusted": "Güvenilir Sertifika",
+    "hostname_match": "Sunucu Adı Eşleşmesi",
+    "dns_info": "DNS Bilgileri"
+  },
+  "lifecycle": {
+    "title": "SSL Sertifika Yaşam Döngüsü",
+    "description": "Anahtar oluşturmadan dağıtıma kadar SSL sertifika yaşam döngüsünü anlayın",
+    "steps": {
+      "key": {
+        "title": "Private Key",
+        "tooltip": "Private key oluştur",
+        "description": "İlk olarak güvenli bir private key oluşturun. Bu anahtar sertifikanızı imzalamak için kullanılacaktır."
+      },
+      "csr": {
+        "title": "CSR",
+        "tooltip": "Sertifika İmza İsteği oluştur",
+        "description": "Organizasyon bilgilerinizi içeren bir Sertifika İmza İsteği oluşturun."
+      },
+      "ca": {
+        "title": "CA İmzası",
+        "tooltip": "Sertifika Otoritesi CSR'ınızı imzalar",
+        "description": "CSR'ınızı imzalatmak için bir Sertifika Otoritesine gönderin."
+      },
+      "cert": {
+        "title": "Sertifika",
+        "tooltip": "İmzalanmış sertifikanız",
+        "description": "CA'dan imzalanmış sertifikanızı alın ve geçerliliğini doğrulayın."
+      },
+      "export": {
+        "title": "Dışa Aktar",
+        "tooltip": "Dağıtım formatına dönüştür",
+        "description": "Sertifikanızı sunucu veya uygulamanızın gerektirdiği formata dönüştürün."
+      }
+    },
+    "go_to_generate": "Oluştur",
+    "go_to_analyze": "Analiz Et",
+    "go_to_check": "Kontrol",
+    "go_to_convert": "Dönüştür",
+    "or_self_signed": "Veya self-signed oluştur",
+    "formats": "Formatlar",
+    "check_validity": "Son kullanma tarihini kontrol et"
+  },
+  "docs": {
+    "title": "Dokümantasyon",
+    "description": "SSL sertifika formatları, dönüşümler ve API kullanımı hakkında bilgi edinin",
+    "formats": {
+      "title": "Sertifika Formatları",
+      "pem": {
+        "name": "PEM",
+        "desc": "Base64 kodlu sertifika, -----BEGIN CERTIFICATE----- başlığı ile. Apache, Nginx için en yaygın format.",
+        "ext": ".pem, .crt, .cer, .key"
+      },
+      "der": {
+        "name": "DER",
+        "desc": "Binary kodlu sertifika. Java platformları tarafından kullanılır.",
+        "ext": ".der, .cer"
+      },
+      "pfx": {
+        "name": "PFX/P12",
+        "desc": "Sertifika, private key ve zincir içerebilen binary format. Windows/IIS tarafından kullanılır.",
+        "ext": ".pfx, .p12"
+      },
+      "p7b": {
+        "name": "P7B/PKCS#7",
+        "desc": "Sadece sertifikalar ve zincir içerir, private key yok. CA paketleri için kullanılır.",
+        "ext": ".p7b, .p7c"
+      },
+      "jks": {
+        "name": "JKS",
+        "desc": "Java KeyStore formatı. Tomcat gibi Java uygulamaları tarafından kullanılır.",
+        "ext": ".jks, .keystore"
+      },
+      "csr": {
+        "name": "CSR",
+        "desc": "Sertifika İmza İsteği. Public key ve konu bilgisi içerir, CA'ya gönderilir.",
+        "ext": ".csr"
+      }
+    },
+    "matrix": {
+      "title": "Dönüşüm Matrisi",
+      "from": "Kaynak",
+      "to": "Hedef",
+      "supported": "Desteklenen"
+    },
+    "api": {
+      "title": "API Endpoint'leri",
+      "convert": "Dönüşüm Endpoint'leri",
+      "analyze": "Analiz Endpoint'leri",
+      "generate": "Oluşturma Endpoint'leri",
+      "check": "Kontrol Endpoint'leri"
+    }
   }
 }
