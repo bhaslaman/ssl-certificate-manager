@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ t.app_name }}</title>
     <script>
-        // Apply theme immediately to prevent flash
+        // Apply theme and sidebar state immediately to prevent flash
         (function() {
             const theme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', theme);
+            const sidebarOpen = localStorage.getItem('sidebarOpen') !== 'false';
+            if (sidebarOpen) {
+                document.documentElement.classList.add('sidebar-open');
+            }
         })();
     </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -18,91 +22,109 @@
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 </head>
 <body>
-    <!-- Top Navbar - Brand and Settings -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/?lang={{ lang }}">
-                <i class="bi bi-shield-lock"></i> {{ t.app_name }}
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="/?lang={{ lang }}" class="sidebar-brand">
+                <i class="bi bi-shield-lock-fill"></i>
+                <span class="sidebar-brand-text">{{ t.app_name }}</span>
             </a>
-            <div class="d-flex align-items-center">
-                <button class="btn nav-link text-white me-2" id="theme-toggle" onclick="toggleTheme()" title="{{ t.common.toggle_theme }}">
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/?lang={{ lang }}" class="sidebar-link" data-page="/">
+                <i class="bi bi-house-fill"></i>
+                <span>{{ t.nav.home }}</span>
+            </a>
+            <a href="/convert?lang={{ lang }}" class="sidebar-link" data-page="/convert">
+                <i class="bi bi-arrow-left-right"></i>
+                <span>{{ t.nav.convert }}</span>
+            </a>
+            <a href="/analyze?lang={{ lang }}" class="sidebar-link" data-page="/analyze">
+                <i class="bi bi-search"></i>
+                <span>{{ t.nav.analyze }}</span>
+            </a>
+            <a href="/generate?lang={{ lang }}" class="sidebar-link" data-page="/generate">
+                <i class="bi bi-plus-circle-fill"></i>
+                <span>{{ t.nav.generate }}</span>
+            </a>
+            <a href="/check?lang={{ lang }}" class="sidebar-link" data-page="/check">
+                <i class="bi bi-globe-americas"></i>
+                <span>{{ t.nav.check }}</span>
+            </a>
+
+            <div class="sidebar-divider"></div>
+
+            <a href="/lifecycle?lang={{ lang }}" class="sidebar-link" data-page="/lifecycle">
+                <i class="bi bi-diagram-3-fill"></i>
+                <span>{{ t.nav.lifecycle }}</span>
+            </a>
+            <a href="/docs-page?lang={{ lang }}" class="sidebar-link" data-page="/docs-page">
+                <i class="bi bi-book-fill"></i>
+                <span>{{ t.nav.docs }}</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-item">
+                <button class="btn btn-link sidebar-link" onclick="toggleTheme()" title="{{ t.common.toggle_theme }}">
                     <i class="bi bi-moon-fill" id="theme-icon"></i>
+                    <span id="theme-label">{{ lang == 'tr' and 'Koyu Tema' or 'Dark Theme' }}</span>
                 </button>
-                <div class="dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="langDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-globe"></i> {{ 'TR' if lang == 'tr' else 'EN' }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="?lang=tr">Turkce</a></li>
-                        <li><a class="dropdown-item" href="?lang=en">English</a></li>
+            </div>
+            <div class="sidebar-footer-item">
+                <div class="dropdown dropup w-100">
+                    <button class="btn btn-link sidebar-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-globe"></i>
+                        <span>{{ 'Turkce' if lang == 'tr' else 'English' }}</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?lang=tr"><i class="bi bi-check2 {{ 'visible' if lang == 'tr' else 'invisible' }}"></i> Turkce</a></li>
+                        <li><a class="dropdown-item" href="?lang=en"><i class="bi bi-check2 {{ 'visible' if lang == 'en' else 'invisible' }}"></i> English</a></li>
                     </ul>
                 </div>
             </div>
+            <div class="sidebar-version">
+                <a href="https://github.com/bhaslaman/ssl-certificate-manager" target="_blank" class="sidebar-github" title="GitHub">
+                    <i class="bi bi-github"></i>
+                </a>
+                <span>v2.0</span>
+                <button class="btn btn-link btn-sm p-0 ms-1" id="check-update-btn" onclick="manualUpdateCheck()" title="{{ lang == 'tr' and 'Guncelleme Kontrol' or 'Check Updates' }}">
+                    <i class="bi bi-arrow-repeat"></i>
+                </button>
+                <span id="update-badge" class="badge bg-success ms-1 d-none" style="cursor: pointer;" onclick="window.open(this.dataset.url, '_blank')">
+                    <i class="bi bi-download"></i> <span id="update-version"></span>
+                </span>
+            </div>
         </div>
-    </nav>
+    </aside>
 
-    <!-- Secondary Navigation - Tabs -->
-    <div class="nav-tabs-container border-bottom shadow-sm">
-        <div class="container">
-            <ul class="nav nav-pills nav-fill flex-nowrap overflow-auto py-2" id="mainNav">
-                <li class="nav-item">
-                    <a class="nav-link nav-tab-link" href="/?lang={{ lang }}">
-                        <i class="bi bi-house"></i>
-                        <span class="nav-label">{{ t.nav.home }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-tab-link" href="/convert?lang={{ lang }}">
-                        <i class="bi bi-arrow-left-right"></i>
-                        <span class="nav-label">{{ t.nav.convert }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-tab-link" href="/analyze?lang={{ lang }}">
-                        <i class="bi bi-search"></i>
-                        <span class="nav-label">{{ t.nav.analyze }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-tab-link" href="/generate?lang={{ lang }}">
-                        <i class="bi bi-plus-circle"></i>
-                        <span class="nav-label">{{ t.nav.generate }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-tab-link" href="/check?lang={{ lang }}">
-                        <i class="bi bi-globe-americas"></i>
-                        <span class="nav-label">{{ t.nav.check }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-tab-link" href="/lifecycle?lang={{ lang }}">
-                        <i class="bi bi-diagram-3"></i>
-                        <span class="nav-label">{{ t.nav.lifecycle }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-tab-link" href="/docs-page?lang={{ lang }}">
-                        <i class="bi bi-book"></i>
-                        <span class="nav-label">{{ t.nav.docs }}</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <main class="container py-4">
-        {% block content %}{% endblock %}
-    </main>
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <button class="topbar-toggle" onclick="toggleSidebar()" title="Toggle Menu">
+                <i class="bi bi-list"></i>
+            </button>
+            <span class="topbar-title d-md-none">{{ t.app_name }}</span>
+            <div class="topbar-spacer"></div>
+        </header>
 
-    <footer class="footer mt-auto py-3">
-        <div class="container text-center">
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container-fluid py-4 px-md-4">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
             <span class="text-muted">SSL Certificate Manager v2.0</span>
-            <span id="update-badge" class="badge bg-info ms-2 d-none" style="cursor: pointer;" onclick="window.open(this.dataset.url, '_blank')">
-                <i class="bi bi-arrow-up-circle"></i> <span id="update-version"></span>
-            </span>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
     <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
@@ -110,6 +132,60 @@
     <script>
         window.LANG = '{{ lang }}';
         window.T = {{ t | tojson | safe }};
+
+        // Define critical functions immediately (before app.js loads)
+        function toggleSidebar() {
+            const isOpen = document.documentElement.classList.toggle('sidebar-open');
+            localStorage.setItem('sidebarOpen', isOpen);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            // Update icon
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.className = newTheme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+            }
+            // Update label
+            const label = document.getElementById('theme-label');
+            if (label) {
+                if (window.LANG === 'tr') {
+                    label.textContent = newTheme === 'dark' ? 'Acik Tema' : 'Koyu Tema';
+                } else {
+                    label.textContent = newTheme === 'dark' ? 'Light Theme' : 'Dark Theme';
+                }
+            }
+        }
+
+        function manualUpdateCheck() {
+            const btn = document.getElementById('check-update-btn');
+            if (btn) {
+                btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i>';
+            }
+            fetch('/api/system/update-check')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.update_available && data.latest_version) {
+                        alert((window.LANG === 'tr' ? 'Yeni versiyon mevcut: v' : 'New version available: v') + data.latest_version);
+                        if (data.release_url) {
+                            window.open(data.release_url, '_blank');
+                        }
+                    } else {
+                        alert(window.LANG === 'tr' ? 'Uygulama guncel!' : 'App is up to date!');
+                    }
+                })
+                .catch(() => {
+                    alert(window.LANG === 'tr' ? 'Guncelleme kontrolu basarisiz' : 'Update check failed');
+                })
+                .finally(() => {
+                    if (btn) {
+                        btn.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
+                    }
+                });
+        }
     </script>
     <script src="/static/js/app.js"></script>
     {% block scripts %}{% endblock %}

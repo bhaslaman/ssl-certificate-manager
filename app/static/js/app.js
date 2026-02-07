@@ -2,6 +2,35 @@
  * SSL Certificate Manager - Main JavaScript
  */
 
+// ==================== SIDEBAR MANAGEMENT ====================
+
+function initSidebar() {
+    // Check if sidebar should be open (default: true on desktop)
+    const savedState = localStorage.getItem('sidebarOpen');
+    const isDesktop = window.innerWidth >= 992;
+
+    // Default to open on desktop, closed on mobile
+    const shouldBeOpen = savedState !== null ? savedState === 'true' : isDesktop;
+
+    if (shouldBeOpen) {
+        document.documentElement.classList.add('sidebar-open');
+    } else {
+        document.documentElement.classList.remove('sidebar-open');
+    }
+}
+
+function toggleSidebar() {
+    const isOpen = document.documentElement.classList.toggle('sidebar-open');
+    localStorage.setItem('sidebarOpen', isOpen);
+}
+
+function closeSidebarOnMobile() {
+    if (window.innerWidth < 992) {
+        document.documentElement.classList.remove('sidebar-open');
+        localStorage.setItem('sidebarOpen', 'false');
+    }
+}
+
 // ==================== THEME MANAGEMENT ====================
 
 function initTheme() {
@@ -13,6 +42,7 @@ function setTheme(theme) {
     document.documentElement.setAttribute('data-bs-theme', theme);
     localStorage.setItem('theme', theme);
     updateThemeIcon(theme);
+    updateThemeLabel(theme);
 }
 
 function toggleTheme() {
@@ -28,8 +58,20 @@ function updateThemeIcon(theme) {
     }
 }
 
-// Initialize theme on page load
+function updateThemeLabel(theme) {
+    const label = document.getElementById('theme-label');
+    if (label) {
+        if (window.LANG === 'tr') {
+            label.textContent = theme === 'dark' ? 'Acik Tema' : 'Koyu Tema';
+        } else {
+            label.textContent = theme === 'dark' ? 'Light Theme' : 'Dark Theme';
+        }
+    }
+}
+
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+    initSidebar();
     initTheme();
     checkForUpdates();
     highlightActiveNav();
@@ -39,12 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function highlightActiveNav() {
     const path = window.location.pathname;
-    const navLinks = document.querySelectorAll('.nav-tab-link');
 
-    navLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        const linkPath = href.split('?')[0]; // Remove query params
-
+    // Sidebar links
+    const sidebarLinks = document.querySelectorAll('.sidebar-link[data-page]');
+    sidebarLinks.forEach(link => {
+        const linkPath = link.dataset.page;
         if (path === linkPath || (path === '/' && linkPath === '/')) {
             link.classList.add('active');
         } else {
