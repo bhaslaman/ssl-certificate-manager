@@ -9,12 +9,12 @@ import json
 import os
 import httpx
 
-from .routers import convert, analyze, generate, check
+from .routers import convert, analyze, generate, check, compare, batch, acme
 
 # Get the app directory
 APP_DIR = Path(__file__).parent
 
-CURRENT_VERSION = "2.0.0"
+CURRENT_VERSION = "2.1.0"
 GITHUB_REPO = "bhaslaman/ssl-certificate-manager"
 
 app = FastAPI(
@@ -57,6 +57,9 @@ app.include_router(convert.router)
 app.include_router(analyze.router)
 app.include_router(generate.router)
 app.include_router(check.router)
+app.include_router(compare.router)
+app.include_router(batch.router)
+app.include_router(acme.router)
 
 
 @app.get("/")
@@ -122,6 +125,45 @@ async def check_page(request: Request, lang: str = "tr"):
     """Render the SSL check page."""
     return templates.TemplateResponse(
         "check.html",
+        {
+            "request": request,
+            "t": get_translation(lang),
+            "lang": lang
+        }
+    )
+
+
+@app.get("/compare")
+async def compare_page(request: Request, lang: str = "tr"):
+    """Render the compare page."""
+    return templates.TemplateResponse(
+        "compare.html",
+        {
+            "request": request,
+            "t": get_translation(lang),
+            "lang": lang
+        }
+    )
+
+
+@app.get("/batch")
+async def batch_page(request: Request, lang: str = "tr"):
+    """Render the batch operations page."""
+    return templates.TemplateResponse(
+        "batch.html",
+        {
+            "request": request,
+            "t": get_translation(lang),
+            "lang": lang
+        }
+    )
+
+
+@app.get("/acme")
+async def acme_page(request: Request, lang: str = "tr"):
+    """Render the ACME/Let's Encrypt page."""
+    return templates.TemplateResponse(
+        "acme.html",
         {
             "request": request,
             "t": get_translation(lang),

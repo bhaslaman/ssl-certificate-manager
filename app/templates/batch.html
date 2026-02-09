@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-collection"></i> {{ t.batch.title }}</h2>
+
+        <!-- Operation Selection -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-gear"></i> {{ t.batch.select_operation }}
+            </div>
+            <div class="card-body">
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="operation" id="op-analyze" value="analyze" checked>
+                    <label class="btn btn-outline-primary" for="op-analyze">
+                        <i class="bi bi-search"></i> {{ t.batch.analyze }}
+                    </label>
+
+                    <input type="radio" class="btn-check" name="operation" id="op-convert" value="convert">
+                    <label class="btn btn-outline-primary" for="op-convert">
+                        <i class="bi bi-arrow-left-right"></i> {{ t.batch.convert }}
+                    </label>
+
+                    <input type="radio" class="btn-check" name="operation" id="op-validate" value="validate">
+                    <label class="btn btn-outline-primary" for="op-validate">
+                        <i class="bi bi-check-circle"></i> {{ t.batch.validate }}
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Options (shown only for convert operation) -->
+        <div id="convert-options" class="card mb-4 d-none">
+            <div class="card-header">
+                <i class="bi bi-sliders"></i> {{ t.batch.conversion_options }}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">{{ t.batch.target_format }}</label>
+                        <select class="form-select" id="target-format">
+                            <option value="pem">PEM</option>
+                            <option value="der">DER</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">{{ t.convert.key_format }}</label>
+                        <select class="form-select" id="key-format">
+                            <option value="pkcs8">PKCS#8 ({{ t.convert.recommended }})</option>
+                            <option value="traditional">Traditional OpenSSL</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="multi-tab" data-bs-toggle="tab" data-bs-target="#multi-upload" type="button">
+                            <i class="bi bi-files"></i> {{ t.batch.upload_multiple }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="zip-tab" data-bs-toggle="tab" data-bs-target="#zip-upload" type="button">
+                            <i class="bi bi-file-zip"></i> {{ t.batch.upload_zip }}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    <!-- Multiple Files Upload -->
+                    <div class="tab-pane fade show active" id="multi-upload" role="tabpanel">
+                        <form id="batch-multi-form">
+                            <div class="mb-3">
+                                <div class="drop-zone-large" id="multi-drop-zone">
+                                    <i class="bi bi-cloud-upload display-4"></i>
+                                    <p class="mt-2">{{ t.common.drag_drop }}</p>
+                                    <p class="text-muted">{{ t.batch.supported_formats }}</p>
+                                    <input type="file" id="multi-files" multiple accept=".pem,.crt,.cer,.der,.pfx,.p12,.p7b,.p7c,.csr" class="d-none">
+                                    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('multi-files').click()">
+                                        {{ t.common.browse }}
+                                    </button>
+                                </div>
+                                <div id="selected-files" class="mt-3 d-none">
+                                    <h6>{{ t.batch.selected_files }}:</h6>
+                                    <ul class="list-group" id="file-list"></ul>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ t.convert.password }} <small class="text-muted">({{ t.common.optional }})</small></label>
+                                <input type="password" class="form-control" id="multi-password" placeholder="{{ t.batch.password_hint }}">
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg" id="process-multi-btn" disabled>
+                                    <i class="bi bi-play-circle"></i> {{ t.batch.process }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ZIP Upload -->
+                    <div class="tab-pane fade" id="zip-upload" role="tabpanel">
+                        <form id="batch-zip-form">
+                            <div class="mb-3">
+                                <div class="drop-zone" data-input="zip-file">
+                                    <i class="bi bi-file-earmark-zip"></i>
+                                    <p>{{ t.common.drag_drop }}</p>
+                                    <p class="text-muted small">{{ t.common.or }}</p>
+                                    <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                                </div>
+                                <input type="file" id="zip-file" class="d-none" accept=".zip">
+                                <small class="file-name text-muted"></small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ t.convert.password }} <small class="text-muted">({{ t.common.optional }})</small></label>
+                                <input type="password" class="form-control" id="zip-password" placeholder="{{ t.batch.password_hint }}">
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-play-circle"></i> {{ t.batch.process }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="batch-result" class="d-none">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-list-check"></i> {{ t.batch.results }}</span>
+                    <div>
+                        <span class="badge bg-success" id="success-count"></span>
+                        <span class="badge bg-danger" id="failed-count"></span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Progress -->
+                    <div id="batch-progress" class="mb-3 d-none">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Results Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="results-table">
+                            <thead>
+                                <tr>
+                                    <th>{{ t.batch.filename }}</th>
+                                    <th>{{ t.batch.status }}</th>
+                                    <th>{{ t.batch.details }}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    initBatchPage();
+});
+
+function initBatchPage() {
+    initDropZones();
+
+    // Operation toggle
+    document.querySelectorAll('input[name="operation"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const convertOptions = document.getElementById('convert-options');
+            if (radio.value === 'convert') {
+                convertOptions.classList.remove('d-none');
+            } else {
+                convertOptions.classList.add('d-none');
+            }
+        });
+    });
+
+    // Multi-file upload handling
+    const multiFiles = document.getElementById('multi-files');
+    const multiDropZone = document.getElementById('multi-drop-zone');
+
+    multiFiles.addEventListener('change', () => {
+        updateFileList(multiFiles.files);
+    });
+
+    multiDropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        multiDropZone.classList.add('dragover');
+    });
+
+    multiDropZone.addEventListener('dragleave', () => {
+        multiDropZone.classList.remove('dragover');
+    });
+
+    multiDropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        multiDropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            multiFiles.files = e.dataTransfer.files;
+            updateFileList(e.dataTransfer.files);
+        }
+    });
+
+    // Multi-file form submission
+    document.getElementById('batch-multi-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await processBatch('multi');
+    });
+
+    // ZIP form submission
+    document.getElementById('batch-zip-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await processBatch('zip');
+    });
+}
+
+function updateFileList(files) {
+    const container = document.getElementById('selected-files');
+    const list = document.getElementById('file-list');
+    const processBtn = document.getElementById('process-multi-btn');
+
+    if (files.length === 0) {
+        container.classList.add('d-none');
+        processBtn.disabled = true;
+        return;
+    }
+
+    container.classList.remove('d-none');
+    processBtn.disabled = false;
+
+    list.innerHTML = '';
+    Array.from(files).forEach((file, index) => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `
+            <span><i class="bi bi-file-earmark"></i> ${escapeHtml(file.name)}</span>
+            <span class="badge bg-secondary">${formatFileSize(file.size)}</span>
+        `;
+        list.appendChild(li);
+    });
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+async function processBatch(mode) {
+    const operation = document.querySelector('input[name="operation"]:checked').value;
+    const formData = new FormData();
+
+    let endpoint = '/api/batch/process';
+
+    if (mode === 'multi') {
+        const files = document.getElementById('multi-files').files;
+        if (files.length === 0) {
+            showToast(window.T.batch.no_files || 'Please select files', 'error');
+            return;
+        }
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);
+        }
+        formData.append('password', document.getElementById('multi-password').value);
+    } else {
+        const zipFile = document.getElementById('zip-file').files[0];
+        if (!zipFile) {
+            showToast(window.T.batch.no_files || 'Please select a file', 'error');
+            return;
+        }
+        endpoint = '/api/batch/process-zip';
+        formData.append('file', zipFile);
+        formData.append('password', document.getElementById('zip-password').value);
+    }
+
+    formData.append('operation', operation);
+    formData.append('target_format', document.getElementById('target-format').value);
+    formData.append('key_format', document.getElementById('key-format').value);
+
+    // Show progress
+    const resultDiv = document.getElementById('batch-result');
+    const progressDiv = document.getElementById('batch-progress');
+    resultDiv.classList.remove('d-none');
+    progressDiv.classList.remove('d-none');
+
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            displayBatchResults(data);
+            showToast(window.T.common.success);
+        } else {
+            showToast(data.detail, 'error');
+        }
+    } catch (err) {
+        showToast(err.message, 'error');
+    } finally {
+        progressDiv.classList.add('d-none');
+    }
+}
+
+function displayBatchResults(data) {
+    const resultDiv = document.getElementById('batch-result');
+    const successCount = document.getElementById('success-count');
+    const failedCount = document.getElementById('failed-count');
+    const tbody = document.getElementById('results-body');
+
+    resultDiv.classList.remove('d-none');
+
+    successCount.textContent = `${window.T.batch.success_count}: ${data.success}`;
+    failedCount.textContent = `${window.T.batch.failure_count}: ${data.failed}`;
+
+    if (data.failed === 0) {
+        failedCount.classList.add('d-none');
+    } else {
+        failedCount.classList.remove('d-none');
+    }
+
+    tbody.innerHTML = '';
+
+    data.results.forEach(result => {
+        const tr = document.createElement('tr');
+        tr.className = result.success ? '' : 'table-danger';
+
+        let details = '';
+        if (result.success) {
+            if (result.type === 'certificate') {
+                const subject = result.info?.subject?.CN || 'N/A';
+                const daysRemaining = result.info?.validity?.days_remaining;
+                details = `<strong>${escapeHtml(subject)}</strong>`;
+                if (daysRemaining !== undefined) {
+                    const badge = daysRemaining < 30 ? 'warning' : 'success';
+                    details += ` <span class="badge bg-${badge}">${daysRemaining} ${window.T.analyze.result.days_remaining}</span>`;
+                }
+            } else if (result.type === 'chain') {
+                details = `${result.certificate_count} ${window.T.batch.certificates_in_chain || 'certificates'}`;
+            } else if (result.validation) {
+                const status = result.chain_complete;
+                const badge = status ? 'success' : 'warning';
+                const text = status ? (window.T.chain_validation?.complete || 'Complete') : (window.T.chain_validation?.incomplete || 'Incomplete');
+                details = `<span class="badge bg-${badge}">${text}</span>`;
+                if (result.issues?.length) {
+                    details += ` <small class="text-muted">${result.issues.length} issues</small>`;
+                }
+            } else if (result.output_files) {
+                details = result.output_files.map(f => `<span class="badge bg-info">${escapeHtml(f.filename)}</span>`).join(' ');
+            }
+        } else {
+            details = `<span class="text-danger">${escapeHtml(result.error)}</span>`;
+        }
+
+        tr.innerHTML = `
+            <td><i class="bi bi-file-earmark"></i> ${escapeHtml(result.filename)}</td>
+            <td>
+                ${result.success
+                    ? '<span class="badge bg-success"><i class="bi bi-check"></i></span>'
+                    : '<span class="badge bg-danger"><i class="bi bi-x"></i></span>'}
+            </td>
+            <td>${details}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+</script>
+{% endblock %}

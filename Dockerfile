@@ -18,7 +18,9 @@ RUN sed -i 's/default = default_sect/default = default_sect\nlegacy = legacy_sec
 
 # Copy requirements first for better caching
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip uninstall -y wheel && \
+    pip install --no-cache-dir --upgrade pip wheel==0.46.2 && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy application
 COPY . .

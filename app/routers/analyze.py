@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from ..services.analyzer import CertificateAnalyzer
+from ..services.chain_validator import ChainValidator
 
 router = APIRouter(prefix="/api/analyze", tags=["analysis"])
 
@@ -109,6 +110,34 @@ async def analyze_csr_text(
 
         return {
             "info": info
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/validate-chain")
+async def validate_chain(
+    file: UploadFile = File(...),
+    password: str = Form(""),
+    trust_store: str = Form("system")
+):
+    """
+    Validate a certificate chain.
+
+    Checks:
+    - Chain completeness
+    - Signature validity
+    - Chain order
+    - Missing intermediates
+    - Root trust status
+    """
+    try:
+        chain_data = await file.read()
+        result = ChainValidator.validate_chain(chain_data, password)
+
+        return {
+            "filename": file.filename,
+            "validation": result
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

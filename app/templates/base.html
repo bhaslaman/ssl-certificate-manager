@@ -52,6 +52,18 @@
                 <i class="bi bi-globe-americas"></i>
                 <span>{{ t.nav.check }}</span>
             </a>
+            <a href="/compare?lang={{ lang }}" class="sidebar-link" data-page="/compare">
+                <i class="bi bi-files"></i>
+                <span>{{ t.nav.compare }}</span>
+            </a>
+            <a href="/batch?lang={{ lang }}" class="sidebar-link" data-page="/batch">
+                <i class="bi bi-collection"></i>
+                <span>{{ t.nav.batch }}</span>
+            </a>
+            <a href="/acme?lang={{ lang }}" class="sidebar-link" data-page="/acme">
+                <i class="bi bi-shield-check"></i>
+                <span>{{ t.nav.acme }}</span>
+            </a>
 
             <div class="sidebar-divider"></div>
 
@@ -88,7 +100,7 @@
                 <a href="https://github.com/bhaslaman/ssl-certificate-manager" target="_blank" class="sidebar-github" title="GitHub">
                     <i class="bi bi-github"></i>
                 </a>
-                <span>v2.0</span>
+                <span>v2.1</span>
                 <button class="btn btn-link btn-sm p-0 ms-1" id="check-update-btn" onclick="manualUpdateCheck()" title="{{ lang == 'tr' and 'Guncelleme Kontrol' or 'Check Updates' }}">
                     <i class="bi bi-arrow-repeat"></i>
                 </button>
@@ -122,7 +134,7 @@
 
         <!-- Footer -->
         <footer class="main-footer">
-            <span class="text-muted">SSL Certificate Manager v2.0</span>
+            <span class="text-muted">SSL Certificate Manager v2.1</span>
         </footer>
     </div>
 

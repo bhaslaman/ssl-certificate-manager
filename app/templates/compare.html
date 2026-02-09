@@ -1,0 +1,554 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-files"></i> {{ t.compare.title }}</h2>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs mb-4" id="compareTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="cert-cert-tab" data-bs-toggle="tab" data-bs-target="#cert-cert" type="button" role="tab">
+                    <i class="bi bi-file-earmark-lock2"></i> {{ t.compare.cert_vs_cert }}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="cert-key-tab" data-bs-toggle="tab" data-bs-target="#cert-key" type="button" role="tab">
+                    <i class="bi bi-key"></i> {{ t.compare.cert_vs_key }}
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="cert-csr-tab" data-bs-toggle="tab" data-bs-target="#cert-csr" type="button" role="tab">
+                    <i class="bi bi-file-earmark-text"></i> {{ t.compare.cert_vs_csr }}
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="compareTabContent">
+            <!-- Certificate vs Certificate -->
+            <div class="tab-pane fade show active" id="cert-cert" role="tabpanel">
+                <form id="compare-cert-cert-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <i class="bi bi-1-circle"></i> {{ t.compare.certificate }} 1
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="drop-zone" data-input="cert1-file">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <p>{{ t.common.drag_drop }}</p>
+                                            <p class="text-muted small">{{ t.common.or }}</p>
+                                            <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                                        </div>
+                                        <input type="file" id="cert1-file" class="d-none" accept=".pem,.crt,.cer,.der,.pfx,.p12">
+                                        <small class="file-name text-muted"></small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ t.convert.password }} <small class="text-muted">({{ t.common.optional }})</small></label>
+                                        <input type="password" class="form-control" id="cert1-password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <i class="bi bi-2-circle"></i> {{ t.compare.certificate }} 2
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="drop-zone" data-input="cert2-file">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <p>{{ t.common.drag_drop }}</p>
+                                            <p class="text-muted small">{{ t.common.or }}</p>
+                                            <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                                        </div>
+                                        <input type="file" id="cert2-file" class="d-none" accept=".pem,.crt,.cer,.der,.pfx,.p12">
+                                        <small class="file-name text-muted"></small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ t.convert.password }} <small class="text-muted">({{ t.common.optional }})</small></label>
+                                        <input type="password" class="form-control" id="cert2-password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-arrow-left-right"></i> {{ t.compare.compare_btn }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Certificate vs Key -->
+            <div class="tab-pane fade" id="cert-key" role="tabpanel">
+                <form id="compare-cert-key-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <i class="bi bi-file-earmark-lock2"></i> {{ t.compare.certificate }}
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="drop-zone" data-input="ck-cert-file">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <p>{{ t.common.drag_drop }}</p>
+                                            <p class="text-muted small">{{ t.common.or }}</p>
+                                            <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                                        </div>
+                                        <input type="file" id="ck-cert-file" class="d-none" accept=".pem,.crt,.cer,.der,.pfx,.p12">
+                                        <small class="file-name text-muted"></small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ t.convert.password }} <small class="text-muted">({{ t.common.optional }})</small></label>
+                                        <input type="password" class="form-control" id="ck-cert-password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <i class="bi bi-key"></i> {{ t.convert.private_key }}
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="drop-zone" data-input="ck-key-file">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <p>{{ t.common.drag_drop }}</p>
+                                            <p class="text-muted small">{{ t.common.or }}</p>
+                                            <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                                        </div>
+                                        <input type="file" id="ck-key-file" class="d-none" accept=".pem,.key">
+                                        <small class="file-name text-muted"></small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ t.convert.password }} <small class="text-muted">({{ t.common.optional }})</small></label>
+                                        <input type="password" class="form-control" id="ck-key-password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> {{ t.compare.verify_match }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Certificate vs CSR -->
+            <div class="tab-pane fade" id="cert-csr" role="tabpanel">
+                <form id="compare-cert-csr-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <i class="bi bi-file-earmark-text"></i> CSR
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="drop-zone" data-input="cc-csr-file">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <p>{{ t.common.drag_drop }}</p>
+                                            <p class="text-muted small">{{ t.common.or }}</p>
+                                            <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                                        </div>
+                                        <input type="file" id="cc-csr-file" class="d-none" accept=".csr,.pem">
+                                        <small class="file-name text-muted"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <i class="bi bi-file-earmark-lock2"></i> {{ t.compare.certificate }}
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="drop-zone" data-input="cc-cert-file">
+                                            <i class="bi bi-cloud-upload"></i>
+                                            <p>{{ t.common.drag_drop }}</p>
+                                            <p class="text-muted small">{{ t.common.or }}</p>
+                                            <button type="button" class="btn btn-outline-primary btn-sm browse-btn">{{ t.common.browse }}</button>
+                                        </div>
+                                        <input type="file" id="cc-cert-file" class="d-none" accept=".pem,.crt,.cer,.der,.pfx,.p12">
+                                        <small class="file-name text-muted"></small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{{ t.convert.password }} <small class="text-muted">({{ t.common.optional }})</small></label>
+                                        <input type="password" class="form-control" id="cc-cert-password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> {{ t.compare.verify_match }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="compare-result" class="mt-4 d-none">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <span id="result-icon"></span>
+                    <span id="result-title" class="ms-2"></span>
+                </div>
+                <div class="card-body" id="result-content">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    initComparePage();
+});
+
+function initComparePage() {
+    initDropZones();
+
+    // Certificate vs Certificate form
+    document.getElementById('compare-cert-cert-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const cert1File = document.getElementById('cert1-file').files[0];
+        const cert2File = document.getElementById('cert2-file').files[0];
+
+        if (!cert1File || !cert2File) {
+            showToast(window.T.compare.select_both_files || 'Please select both files', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('cert1_file', cert1File);
+        formData.append('cert2_file', cert2File);
+        formData.append('cert1_password', document.getElementById('cert1-password').value);
+        formData.append('cert2_password', document.getElementById('cert2-password').value);
+
+        try {
+            const response = await fetch('/api/compare/certificates', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                displayCertCertResult(data);
+            } else {
+                showToast(data.detail, 'error');
+            }
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    });
+
+    // Certificate vs Key form
+    document.getElementById('compare-cert-key-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const certFile = document.getElementById('ck-cert-file').files[0];
+        const keyFile = document.getElementById('ck-key-file').files[0];
+
+        if (!certFile || !keyFile) {
+            showToast(window.T.compare.select_both_files || 'Please select both files', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('cert_file', certFile);
+        formData.append('key_file', keyFile);
+        formData.append('cert_password', document.getElementById('ck-cert-password').value);
+        formData.append('key_password', document.getElementById('ck-key-password').value);
+
+        try {
+            const response = await fetch('/api/compare/cert-key', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                displayCertKeyResult(data);
+            } else {
+                showToast(data.detail, 'error');
+            }
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    });
+
+    // Certificate vs CSR form
+    document.getElementById('compare-cert-csr-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const csrFile = document.getElementById('cc-csr-file').files[0];
+        const certFile = document.getElementById('cc-cert-file').files[0];
+
+        if (!csrFile || !certFile) {
+            showToast(window.T.compare.select_both_files || 'Please select both files', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('csr_file', csrFile);
+        formData.append('cert_file', certFile);
+        formData.append('cert_password', document.getElementById('cc-cert-password').value);
+
+        try {
+            const response = await fetch('/api/compare/cert-csr', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                displayCertCsrResult(data);
+            } else {
+                showToast(data.detail, 'error');
+            }
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    });
+}
+
+function displayCertCertResult(data) {
+    const resultDiv = document.getElementById('compare-result');
+    const resultIcon = document.getElementById('result-icon');
+    const resultTitle = document.getElementById('result-title');
+    const contentDiv = document.getElementById('result-content');
+
+    const comparison = data.comparison;
+    const isIdentical = comparison.are_identical;
+    const sameKey = comparison.same_public_key;
+
+    if (isIdentical) {
+        resultIcon.innerHTML = '<i class="bi bi-check-circle-fill text-success fs-4"></i>';
+        resultTitle.textContent = window.T.compare.identical || 'Certificates are identical';
+    } else if (sameKey) {
+        resultIcon.innerHTML = '<i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>';
+        resultTitle.textContent = window.T.compare.same_key || 'Same public key, different certificates';
+    } else {
+        resultIcon.innerHTML = '<i class="bi bi-x-circle-fill text-danger fs-4"></i>';
+        resultTitle.textContent = window.T.compare.different || 'Certificates are different';
+    }
+
+    let html = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6><i class="bi bi-1-circle"></i> ${escapeHtml(data.cert1_filename)}</h6>
+                ${renderCertInfo(comparison.certificate1)}
+            </div>
+            <div class="col-md-6">
+                <h6><i class="bi bi-2-circle"></i> ${escapeHtml(data.cert2_filename)}</h6>
+                ${renderCertInfo(comparison.certificate2)}
+            </div>
+        </div>
+    `;
+
+    if (comparison.differences.length > 0) {
+        html += `
+            <hr>
+            <h6><i class="bi bi-exclamation-triangle text-warning"></i> ${window.T.compare.differences || 'Differences'}</h6>
+            <table class="table table-sm">
+                <thead><tr><th>${window.T.compare.field || 'Field'}</th><th>${window.T.compare.certificate} 1</th><th>${window.T.compare.certificate} 2</th></tr></thead>
+                <tbody>
+                    ${comparison.differences.map(d => `
+                        <tr class="table-warning">
+                            <td><strong>${escapeHtml(d.display_name)}</strong></td>
+                            <td>${formatValue(d.cert1_value)}</td>
+                            <td>${formatValue(d.cert2_value)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    if (comparison.matches.length > 0 && !isIdentical) {
+        html += `
+            <hr>
+            <h6><i class="bi bi-check-circle text-success"></i> ${window.T.compare.matches || 'Matches'}</h6>
+            <ul class="list-group list-group-flush">
+                ${comparison.matches.map(m => `
+                    <li class="list-group-item list-group-item-success">
+                        <strong>${escapeHtml(m.display_name || m.field)}</strong>
+                        ${m.value ? ': ' + formatValue(m.value) : ''}
+                        ${m.description ? ' - ' + escapeHtml(m.description) : ''}
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+    }
+
+    contentDiv.innerHTML = html;
+    resultDiv.classList.remove('d-none');
+}
+
+function displayCertKeyResult(data) {
+    const resultDiv = document.getElementById('compare-result');
+    const resultIcon = document.getElementById('result-icon');
+    const resultTitle = document.getElementById('result-title');
+    const contentDiv = document.getElementById('result-content');
+
+    const result = data.result;
+
+    if (result.error) {
+        resultIcon.innerHTML = '<i class="bi bi-exclamation-circle-fill text-danger fs-4"></i>';
+        resultTitle.textContent = window.T.common.error;
+        contentDiv.innerHTML = `<div class="alert alert-danger">${escapeHtml(result.error)}</div>`;
+        resultDiv.classList.remove('d-none');
+        return;
+    }
+
+    if (result.match) {
+        resultIcon.innerHTML = '<i class="bi bi-check-circle-fill text-success fs-4"></i>';
+        resultTitle.textContent = window.T.compare.match || 'Match';
+    } else {
+        resultIcon.innerHTML = '<i class="bi bi-x-circle-fill text-danger fs-4"></i>';
+        resultTitle.textContent = window.T.compare.mismatch || 'Mismatch';
+    }
+
+    let html = `
+        <div class="alert ${result.match ? 'alert-success' : 'alert-danger'}">
+            <i class="bi bi-${result.match ? 'check-circle' : 'x-circle'}"></i>
+            ${escapeHtml(result.message)}
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h6><i class="bi bi-file-earmark-lock2"></i> ${window.T.compare.certificate}</h6>
+                <table class="table table-sm">
+                    <tr><td>Subject</td><td>${formatValue(result.certificate.subject)}</td></tr>
+                    <tr><td>Issuer</td><td>${formatValue(result.certificate.issuer)}</td></tr>
+                    <tr><td>Algorithm</td><td>${escapeHtml(result.certificate.public_key_algorithm || '-')}</td></tr>
+                    <tr><td>Key Size</td><td>${result.certificate.public_key_size || '-'} bit</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6><i class="bi bi-key"></i> ${window.T.convert.private_key}</h6>
+                <table class="table table-sm">
+                    <tr><td>Algorithm</td><td>${escapeHtml(result.key.algorithm || '-')}</td></tr>
+                    <tr><td>Key Size</td><td>${result.key.key_size || '-'} bit</td></tr>
+                    <tr><td>Encrypted</td><td>${result.key.encrypted ? window.T.common.yes : window.T.common.no}</td></tr>
+                </table>
+            </div>
+        </div>
+    `;
+
+    contentDiv.innerHTML = html;
+    resultDiv.classList.remove('d-none');
+}
+
+function displayCertCsrResult(data) {
+    const resultDiv = document.getElementById('compare-result');
+    const resultIcon = document.getElementById('result-icon');
+    const resultTitle = document.getElementById('result-title');
+    const contentDiv = document.getElementById('result-content');
+
+    const result = data.result;
+
+    if (result.error) {
+        resultIcon.innerHTML = '<i class="bi bi-exclamation-circle-fill text-danger fs-4"></i>';
+        resultTitle.textContent = window.T.common.error;
+        contentDiv.innerHTML = `<div class="alert alert-danger">${escapeHtml(result.error)}</div>`;
+        resultDiv.classList.remove('d-none');
+        return;
+    }
+
+    if (result.match) {
+        resultIcon.innerHTML = '<i class="bi bi-check-circle-fill text-success fs-4"></i>';
+        resultTitle.textContent = window.T.compare.match || 'Match';
+    } else {
+        resultIcon.innerHTML = '<i class="bi bi-x-circle-fill text-danger fs-4"></i>';
+        resultTitle.textContent = window.T.compare.mismatch || 'Mismatch';
+    }
+
+    let html = `
+        <div class="alert ${result.match ? 'alert-success' : 'alert-danger'}">
+            <i class="bi bi-${result.match ? 'check-circle' : 'x-circle'}"></i>
+            ${escapeHtml(result.message)}
+        </div>
+    `;
+
+    if (result.matches.length > 0) {
+        html += `
+            <h6><i class="bi bi-check-circle text-success"></i> ${window.T.compare.matches || 'Matches'}</h6>
+            <ul class="list-group list-group-flush mb-3">
+                ${result.matches.map(m => `
+                    <li class="list-group-item list-group-item-success">
+                        <strong>${escapeHtml(m.display_name)}</strong>
+                        ${m.description ? ' - ' + escapeHtml(m.description) : ''}
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+    }
+
+    if (result.differences.length > 0) {
+        html += `
+            <h6><i class="bi bi-exclamation-triangle text-warning"></i> ${window.T.compare.differences || 'Differences'}</h6>
+            <table class="table table-sm">
+                <thead><tr><th>${window.T.compare.field || 'Field'}</th><th>CSR</th><th>${window.T.compare.certificate}</th></tr></thead>
+                <tbody>
+                    ${result.differences.map(d => `
+                        <tr class="table-warning">
+                            <td><strong>${escapeHtml(d.display_name)}</strong></td>
+                            <td>${formatValue(d.csr_value)}</td>
+                            <td>${formatValue(d.cert_value)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    contentDiv.innerHTML = html;
+    resultDiv.classList.remove('d-none');
+}
+
+function renderCertInfo(info) {
+    if (!info) return '';
+
+    return `
+        <table class="table table-sm">
+            <tr><td>Subject</td><td>${formatValue(info.subject)}</td></tr>
+            <tr><td>Issuer</td><td>${formatValue(info.issuer)}</td></tr>
+            <tr><td>Valid Until</td><td>${escapeHtml(info.not_after || '-')}</td></tr>
+            <tr><td>Serial</td><td><code>${escapeHtml(info.serial_number || '-')}</code></td></tr>
+            <tr><td>SHA-256</td><td><code class="small">${escapeHtml(info.fingerprint_sha256 || '-')}</code></td></tr>
+        </table>
+    `;
+}
+
+function formatValue(val) {
+    if (val === null || val === undefined) return '-';
+    if (typeof val === 'object') {
+        if (Array.isArray(val)) {
+            return val.map(v => escapeHtml(String(v))).join(', ');
+        }
+        return Object.entries(val).map(([k, v]) => `${k}=${escapeHtml(String(v))}`).join(', ');
+    }
+    return escapeHtml(String(val));
+}
+</script>
+{% endblock %}
